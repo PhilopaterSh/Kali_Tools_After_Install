@@ -16,13 +16,24 @@ This script automates the installation and updating of various reconnaissance an
 
 ## Usage
 
-To run the script, navigate to its directory and execute it:
+1.  **Set Your Password:**
+    This script requires `sudo` privileges for many installations. Before running, you **must** open the `Tools_Install.sh` file and change the `PASSWORD` variable to your own `sudo` password.
+    ```bash
+    # Line 15 in Tools_Install.sh
+    PASSWORD="your_sudo_password_here"
+    ```
 
-```bash
-./Tools_Install.sh
-```
+2.  **Make the Script Executable:**
+    After downloading, give the script execute permissions using the `chmod` command:
+    ```bash
+    chmod +x Tools_Install.sh
+    ```
 
-The script requires `sudo` privileges for some installations. It uses a hardcoded password variable (`PASSWORD="kali"`). **It is highly recommended to change this password in the script if your `sudo` password is not `kali` to avoid issues or security risks.**
+3.  **Run the Script:**
+    Now you can execute the script:
+    ```bash
+    ./Tools_Install.sh
+    ```
 
 ## Tools Installed/Updated
 
