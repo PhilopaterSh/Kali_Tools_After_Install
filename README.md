@@ -7,9 +7,11 @@ This script automates the installation and updating of various reconnaissance an
 -   **ZSH Setup:** Checks for ZSH installation and configures the `~/.zshrc` file with necessary PATH variables.
 -   **Go Environment:** Ensures Go is installed and configures `GOPATH`.
 -   **Node.js & npm:** Installs Node.js and npm if not present.
+-   **Docker & Docker Compose:** Installs Docker and Docker Compose if not present.
 -   **PDTM Tools:** Installs and updates a comprehensive list of ProjectDiscovery tools via `pdtm`.
+-   **Additional Tools:** Installs Visual Studio Code, massdns, and seclists via apt and snap.
 -   **Other Tools:** Installs and updates a variety of other essential tools including:
-    -   `amass`, `anew`, `assetfinder`, `curl`, `dirb`, `dirsearch`, `feroxbuster`, `ffuf`, `figlet`, `gemini`, `jsfinder`, `jq`, `nmap`, `nikto`, `update-fingerprints`, `waybacklister`, `wget`, `whatweb`.
+    -   `amass`, `anew`, `assetfinder`, `curl`, `dirb`, `dirsearch`, `feroxbuster`, `ffuf`, `figlet`, `gemini`, `jsfinder`, `jq`, `nmap`, `nikto`, `update-fingerprints`, `waybacklister`, `wget`, `whatweb`, `docker`, `docker-compose`.
 -   **Python Environment:** Installs Python build dependencies and `pipx`.
 -   **PATH Configuration:** Adds necessary Go and PDTM binary paths to `~/.bashrc` and `~/.zshrc`.
 -   **Installation Summary:** Provides a clear summary of successfully installed tools and those that encountered verification issues at the end of the execution.
@@ -34,6 +36,63 @@ This script automates the installation and updating of various reconnaissance an
     ```bash
     ./Tools_Install.sh
     ```
+
+## Sample Output
+
+```
+[+] Verifying tool installations...
+
+--- Installation Summary ---
+[✓] Successfully installed tools:
+    - amass (/usr/bin/amass)
+    - anew (/usr/local/bin/anew)
+    - assetfinder (/usr/local/bin/assetfinder)
+    - curl (/usr/bin/curl)
+    - dirb (/usr/bin/dirb)
+    - dirsearch (/usr/local/bin/dirsearch)
+    - docker (/usr/bin/docker)
+    - docker-compose (/usr/bin/docker-compose)
+    - feroxbuster (/usr/bin/feroxbuster)
+    - ffuf (/usr/bin/ffuf)
+    - figlet (/usr/bin/figlet)
+    - gemini (/usr/local/bin/gemini)
+    - jsfinder (/usr/local/bin/jsfinder)
+    - jq (/usr/bin/jq)
+    - nmap (/usr/bin/nmap)
+    - nikto (/usr/bin/nikto)
+    - update-fingerprints (/usr/local/bin/update-fingerprints)
+    - waybacklister (/usr/local/bin/waybacklister)
+    - wget (/usr/bin/wget)
+    - whatweb (/usr/bin/whatweb)
+    - aix ($HOME/.pdtm/go/bin/aix)
+    - alterx ($HOME/.pdtm/go/bin/alterx)
+    - asnmap ($HOME/.pdtm/go/bin/asnmap)
+    - cdncheck (/usr/local/bin/cdncheck)
+    - chaos-client ($HOME/.pdtm/go/bin/chaos-client)
+    - cloudlist ($HOME/.pdtm/go/bin/cloudlist)
+    - dnsx (/usr/local/bin/dnsx)
+    - httpx (/usr/local/bin/httpx)
+    - interactsh-client ($HOME/.pdtm/go/bin/interactsh-client)
+    - interactsh-server ($HOME/.pdtm/go/bin/interactsh-server)
+    - katana (/usr/local/bin/katana)
+    - mapcidr ($HOME/.pdtm/go/bin/mapcidr)
+    - naabu ($HOME/.pdtm/go/bin/naabu)
+    - notify ($HOME/.pdtm/go/bin/notify)
+    - nuclei (/usr/local/bin/nuclei)
+    - pdtm (/usr/local/bin/pdtm)
+    - proxify ($HOME/.pdtm/go/bin/proxify)
+    - shuffledns ($HOME/.pdtm/go/bin/shuffledns)
+    - simplehttpserver ($HOME/.pdtm/go/bin/simplehttpserver)
+    - subfinder (/usr/bin/subfinder)
+    - tldfinder ($HOME/.pdtm/go/bin/tldfinder)
+    - tlsx ($HOME/.pdtm/go/bin/tlsx)
+    - tunnelx ($HOME/.pdtm/go/bin/tunnelx)
+    - uncover ($HOME/.pdtm/go/bin/uncover)
+    - urlfinder ($HOME/.pdtm/go/bin/urlfinder)
+    - vulnx ($HOME/.pdtm/go/bin/vulnx)
+[✓] All tools verified successfully.
+----------------------------
+```
 
 ## Tools Installed/Updated
 
@@ -76,6 +135,8 @@ The script installs and updates tools from various sources:
 -   `curl`
 -   `dirb`
 -   `dirsearch`
+-   `docker`
+-   `docker-compose`
 -   `feroxbuster`
 -   `ffuf`
 -   `figlet`
@@ -88,6 +149,9 @@ The script installs and updates tools from various sources:
 -   `waybacklister`
 -   `wget`
 -   `whatweb`
+-   `massdns`
+-   `seclists`
+-   `Visual Studio Code`
 
 ## Important Notes
 

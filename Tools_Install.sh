@@ -405,6 +405,69 @@ echo -e "${GREEN}[✓] pipx in PATH.${NC}"
 
 check_and_install_tools
 
+# === Function: Install Additional Tools (VSCode, massdns, seclists) ===
+install_additional_tools() {
+    echo -e "${BLUE}[+] Installing additional tools (VSCode, massdns, seclists)...${NC}"
+
+    # Install snapd
+    if ! command -v snap &>/dev/null; then
+        echo -e "${BLUE}[+] Installing snapd...${NC}"
+        echo $PASSWORD | sudo -S apt update >/dev/null 2>&1
+        echo $PASSWORD | sudo -S apt install -y snapd >/dev/null 2>&1
+        echo $PASSWORD | sudo -S systemctl enable snapd
+        echo $PASSWORD | sudo -S systemctl start snapd
+        if command -v snap &>/dev/null; then
+            echo -e "${GREEN}[✓] snapd installed successfully.${NC}"
+        else
+            echo -e "${RED}[✗] Failed to install snapd.${NC}"
+            return 1
+        fi
+    else
+        echo -e "${GREEN}[✓] snapd is already installed.${NC}"
+    fi
+
+    # Install Visual Studio Code
+    if ! command -v code &>/dev/null; then
+        echo -e "${BLUE}[+] Installing Visual Studio Code...${NC}"
+        echo $PASSWORD | sudo -S snap install code --classic >/dev/null 2>&1
+        if command -v code &>/dev/null; then
+            echo -e "${GREEN}[✓] Visual Studio Code installed successfully.${NC}"
+        else
+            echo -e "${RED}[✗] Failed to install Visual Studio Code.${NC}"
+        fi
+    else
+        echo -e "${GREEN}[✓] Visual Studio Code is already installed.${NC}"
+    fi
+
+    # Install massdns
+    if ! command -v massdns &>/dev/null; then
+        echo -e "${BLUE}[+] Installing massdns...${NC}"
+        echo $PASSWORD | sudo -S apt install -y massdns >/dev/null 2>&1
+        if command -v massdns &>/dev/null; then
+            echo -e "${GREEN}[✓] massdns installed successfully.${NC}"
+        else
+            echo -e "${RED}[✗] Failed to install massdns.${NC}"
+        fi
+    else
+        echo -e "${GREEN}[✓] massdns is already installed.${NC}"
+    fi
+
+    # Install seclists
+    if [ ! -d "/usr/share/seclists" ]; then
+        echo -e "${BLUE}[+] Installing seclists...${NC}"
+        echo $PASSWORD | sudo -S apt install -y seclists >/dev/null 2>&1
+        if [ -d "/usr/share/seclists" ]; then
+            echo -e "${GREEN}[✓] seclists installed successfully.${NC}"
+        else
+            echo -e "${RED}[✗] Failed to install seclists.${NC}"
+        fi
+    else
+        echo -e "${GREEN}[✓] seclists is already installed.${NC}"
+    fi
+}
+
+install_additional_tools
+
 set +x
 
 verify_installations
