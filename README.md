@@ -153,6 +153,75 @@ The script installs and updates tools from various sources:
 -   `seclists`
 -   `Visual Studio Code`
 
+## Tool Categories
+
+Here is a categorization of the installed tools based on their primary function in a security workflow.
+
+### Information Gathering & Asset Discovery
+Tools for discovering subdomains, IPs, and other assets related to a target.
+-   `amass`
+-   `assetfinder`
+-   `subfinder`
+-   `chaos-client`
+-   `uncover`
+-   `cloudlist`
+-   `asnmap`
+-   `whatweb`
+-   `waybacklister`
+-   `jsfinder`
+-   `urlfinder`
+-   `tldfinder`
+
+### Content Discovery & Scanning
+Tools for finding hidden files, directories, and endpoints on web servers.
+-   `dirb`
+-   `dirsearch`
+-   `feroxbuster`
+-   `ffuf`
+-   `katana`
+
+### Network & Vulnerability Scanning
+Tools for scanning networks, ports, and known vulnerabilities.
+-   `nmap`
+-   `naabu`
+-   `nikto`
+-   `nuclei`
+-   `vulnx`
+-   `tlsx`
+-   `interactsh-client` / `server`
+
+### DNS Tools
+Utilities for DNS enumeration, resolution, and manipulation.
+-   `dnsx`
+-   `massdns`
+-   `shuffledns`
+-   `alterx`
+-   `mapcidr`
+
+### Web Interaction Tools
+Tools for making HTTP requests and interacting with web services.
+-   `httpx`
+-   `curl`
+-   `wget`
+-   `proxify`
+
+### Utilities & Miscellaneous Tools
+Helper scripts, wordlists, and other essential tools.
+-   `anew`
+-   `jq`
+-   `seclists`
+-   `pdtm`
+-   `Visual Studio Code`
+-   `docker` / `docker-compose`
+-   `gemini`
+-   `figlet`
+-   `notify`
+-   `simplehttpserver`
+-   `update-fingerprints`
+-   `cdncheck`
+-   `tunnelx`
+-   `aix`
+
 ## Important Notes
 
 -   After running the script, you may need to restart your terminal or run `source ~/.bashrc` or `source ~/.zshrc` for the new PATH variables to take effect.
