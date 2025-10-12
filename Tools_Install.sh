@@ -55,7 +55,7 @@ setup_zsh_path() {
 # === Required Tools ===
 REQUIRED_TOOLS=(
     amass anew assetfinder curl dirb dirsearch feroxbuster ffuf figlet gemini
-    jsfinder jq nmap nikto update-fingerprints waybacklister wget whatweb
+    jsfinder jq nmap nikto update-fingerprints waybacklister wget whatweb hexstrike-ai Ph.Sh-Subdomain
 )
 
 PDTM_TOOLS=(
@@ -269,6 +269,24 @@ check_and_install_tools() {
                 gemini)
                     echo $PASSWORD | sudo -S npm install -g @google/gemini-cli >/dev/null 2>&1 && installed_or_updated=true
                     ;;
+                hexstrike-ai)
+                    if [ -d "$HOME/tools/hexstrike-ai" ]; then
+                        (cd "$HOME/tools/hexstrike-ai" && git pull >/dev/null 2>&1)
+                    else
+                        git clone https://github.com/0x4m4/hexstrike-ai.git "$HOME/tools/hexstrike-ai" >/dev/null 2>&1
+                    fi
+                    python3 -m venv "$HOME/tools/hexstrike-ai/venv" >/dev/null 2>&1
+                    (
+                        source "$HOME/tools/hexstrike-ai/venv/bin/activate"
+                        pip3 install -r "$HOME/tools/hexstrike-ai/requirements.txt" >/dev/null 2>&1
+                    )
+                    echo -e '#!/bin/bash\nsource "$HOME/tools/hexstrike-ai/venv/bin/activate"\npython "$HOME/tools/hexstrike-ai/server.py" "$@"' > "$HOME/tools/hexstrike-ai/hexstrike-ai"
+                    chmod +x "$HOME/tools/hexstrike-ai/hexstrike-ai"
+                    echo $PASSWORD | sudo -S ln -sf "$HOME/tools/hexstrike-ai/hexstrike-ai" /usr/local/bin/hexstrike-ai
+                    if [ -f "/usr/local/bin/hexstrike-ai" ]; then
+                        installed_or_updated=true
+                    fi
+                    ;;
                 *)
                     installed_or_updated=true
                     ;;
@@ -333,6 +351,36 @@ check_and_install_tools() {
                     ;;
                 gemini)
                     echo $PASSWORD | sudo -S npm install -g @google/gemini-cli >/dev/null 2>&1 && installed_or_updated=true
+                    ;;
+                hexstrike-ai)
+                    if [ -d "$HOME/tools/hexstrike-ai" ]; then
+                        (cd "$HOME/tools/hexstrike-ai" && git pull >/dev/null 2>&1)
+                    else
+                        git clone https://github.com/0x4m4/hexstrike-ai.git "$HOME/tools/hexstrike-ai" >/dev/null 2>&1
+                    fi
+                    python3 -m venv "$HOME/tools/hexstrike-ai/venv" >/dev/null 2>&1
+                    (
+                        source "$HOME/tools/hexstrike-ai/venv/bin/activate"
+                        pip3 install -r "$HOME/tools/hexstrike-ai/requirements.txt" >/dev/null 2>&1
+                    )
+                    echo -e '#!/bin/bash\nsource "$HOME/tools/hexstrike-ai/venv/bin/activate"\npython "$HOME/tools/hexstrike-ai/server.py" "$@"' > "$HOME/tools/hexstrike-ai/hexstrike-ai"
+                    chmod +x "$HOME/tools/hexstrike-ai/hexstrike-ai"
+                    echo $PASSWORD | sudo -S ln -sf "$HOME/tools/hexstrike-ai/hexstrike-ai" /usr/local/bin/hexstrike-ai
+                    if [ -f "/usr/local/bin/hexstrike-ai" ]; then
+                        installed_or_updated=true
+                    fi
+                    ;;
+                Ph.Sh-Subdomain)
+                    if [ -d "$HOME/tools/Ph.Sh-Subdomain" ]; then
+                        (cd "$HOME/tools/Ph.Sh-Subdomain" && git pull >/dev/null 2>&1)
+                    else
+                        git clone https://github.com/PhilopaterSh/Ph.Sh-Subdomain.git "$HOME/tools/Ph.Sh-Subdomain" >/dev/null 2>&1
+                    fi
+                    pip3 install --break-system-packages -r "$HOME/tools/Ph.Sh-Subdomain/requirements.txt" >/dev/null 2>&1
+                    (cd "$HOME/tools/Ph.Sh-Subdomain" && go build >/dev/null 2>&1)
+                    if [ -f "$HOME/tools/Ph.Sh-Subdomain/Ph.Sh-Subdomain" ]; then
+                        cp "$HOME/tools/Ph.Sh-Subdomain/Ph.Sh-Subdomain" "$(go env GOPATH)/bin/" >/dev/null 2>&1 && installed_or_updated=true
+                    fi
                     ;;
                 *)
                     ;;

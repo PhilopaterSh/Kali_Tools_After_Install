@@ -1,5 +1,7 @@
 # Tools_Install.sh
 
+> **Note:** This script is actively and continuously updated to include new tools and features.
+
 This script automates the installation and updating of various reconnaissance and security tools commonly used in penetration testing and bug bounty hunting. It handles Go-based tools, apt-package installations, pipx installations, and git-cloned tools.
 
 ## Features
@@ -141,10 +143,12 @@ The script installs and updates tools from various sources:
 -   `ffuf`
 -   `figlet`
 -   `gemini` (Google Gemini CLI)
+-   `hexstrike-ai`
 -   `jsfinder`
 -   `jq`
 -   `nmap`
 -   `nikto`
+-   `Ph.Sh-Subdomain`
 -   `update-fingerprints`
 -   `waybacklister`
 -   `wget`
@@ -156,6 +160,10 @@ The script installs and updates tools from various sources:
 ## Tool Categories
 
 Here is a categorization of the installed tools based on their primary function in a security workflow.
+
+### AI-Powered Security
+Tools that leverage AI for automated security tasks.
+-   `hexstrike-ai`
 
 ### Information Gathering & Asset Discovery
 Tools for discovering subdomains, IPs, and other assets related to a target.
@@ -171,6 +179,7 @@ Tools for discovering subdomains, IPs, and other assets related to a target.
 -   `jsfinder`
 -   `urlfinder`
 -   `tldfinder`
+-   `Ph.Sh-Subdomain`
 
 ### Content Discovery & Scanning
 Tools for finding hidden files, directories, and endpoints on web servers.
