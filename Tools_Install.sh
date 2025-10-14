@@ -56,7 +56,7 @@ setup_zsh_path() {
 REQUIRED_TOOLS=(
     amass anew assetfinder curl dirb dirsearch feroxbuster ffuf figlet gemini
     jsfinder jq nmap nikto update-fingerprints waybacklister wget whatweb hexstrike-ai Ph.Sh-Subdomain
-    ghauri dalfox trufflehog
+    ghauri dalfox trufflehog findomain
 )
 
 PDTM_TOOLS=(
@@ -92,6 +92,7 @@ verify_installations() {
         "ghauri" "/usr/local/bin/ghauri"
         "dalfox" "/usr/local/bin/dalfox"
         "trufflehog" "/usr/local/bin/trufflehog"
+        "findomain" "/usr/bin/findomain"
     )
     local go_tools=(
         "aix" "$HOME/.pdtm/go/bin/aix"
@@ -219,7 +220,7 @@ check_and_install_tools() {
         if command -v "$tool" &>/dev/null; then
 
             case $tool in
-                figlet|ffuf|jq|nikto|feroxbuster|whatweb|curl|wget|dirb|nmap|subfinder)
+                figlet|ffuf|jq|nikto|feroxbuster|whatweb|curl|wget|dirb|nmap|subfinder|findomain)
                     echo $PASSWORD | sudo -S apt-get --only-upgrade install -y "$tool" >/dev/null 2>&1 && installed_or_updated=true
                     ;;
                 assetfinder|anew)
@@ -317,6 +318,18 @@ check_and_install_tools() {
                 trufflehog)
                     curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin >/dev/null 2>&1 && installed_or_updated=true
                     ;;
+                Ph.Sh-Subdomain)
+                    if [ -d "$HOME/tools/Ph.Sh-Subdomain" ]; then
+                        (cd "$HOME/tools/Ph.Sh-Subdomain" && git pull >/dev/null 2>&1)
+                    else
+                        git clone https://github.com/PhilopaterSh/Ph.Sh-Subdomain.git "$HOME/tools/Ph.Sh-Subdomain" >/dev/null 2>&1
+                    fi
+                    pip3 install --break-system-packages -r "$HOME/tools/Ph.Sh-Subdomain/requirements.txt" >/dev/null 2>&1
+                    (cd "$HOME/tools/Ph.Sh-Subdomain" && go build >/dev/null 2>&1)
+                    if [ -f "$HOME/tools/Ph.Sh-Subdomain/Ph.Sh-Subdomain" ]; then
+                        cp "$HOME/tools/Ph.Sh-Subdomain/Ph.Sh-Subdomain" "$(go env GOPATH)/bin/" >/dev/null 2>&1 && installed_or_updated=true
+                    fi
+                    ;;
                 *)
                     installed_or_updated=true
                     ;;
@@ -324,7 +337,7 @@ check_and_install_tools() {
         else
 
             case $tool in
-                figlet|ffuf|jq|nikto|feroxbuster|whatweb|curl|wget|dirb|nmap|subfinder)
+                figlet|ffuf|jq|nikto|feroxbuster|whatweb|curl|wget|dirb|nmap|subfinder|findomain)
                     echo $PASSWORD | sudo -S apt update >/dev/null 2>&1 && echo $PASSWORD | sudo -S apt install -y "$tool" >/dev/null 2>&1 && installed_or_updated=true
                     ;;
                 assetfinder|anew)

@@ -142,6 +142,7 @@ The script installs and updates tools from various sources:
 -   `feroxbuster`
 -   `ffuf`
 -   `figlet`
+-   `findomain`
 -   `gemini` (Google Gemini CLI)
 -   `hexstrike-ai`
 -   `jsfinder`
@@ -178,8 +179,8 @@ Tools for discovering subdomains, IPs, and other assets related to a target.
 -   `waybacklister`
 -   `jsfinder`
 -   `urlfinder`
--   `tldfinder`
 -   `Ph.Sh-Subdomain`
+-   `findomain`
 
 ### Content Discovery & Scanning
 Tools for finding hidden files, directories, and endpoints on web servers.
