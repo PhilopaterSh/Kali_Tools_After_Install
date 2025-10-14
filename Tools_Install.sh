@@ -56,6 +56,7 @@ setup_zsh_path() {
 REQUIRED_TOOLS=(
     amass anew assetfinder curl dirb dirsearch feroxbuster ffuf figlet gemini
     jsfinder jq nmap nikto update-fingerprints waybacklister wget whatweb hexstrike-ai Ph.Sh-Subdomain
+    ghauri dalfox trufflehog
 )
 
 PDTM_TOOLS=(
@@ -88,6 +89,9 @@ verify_installations() {
         "waybacklister" "" # waybacklister might be installed via pipx, so path might vary or not be directly in /usr/local/bin
         "wget" "/usr/bin/wget"
         "whatweb" "/usr/bin/whatweb"
+        "ghauri" "/usr/local/bin/ghauri"
+        "dalfox" "/usr/local/bin/dalfox"
+        "trufflehog" "/usr/local/bin/trufflehog"
     )
     local go_tools=(
         "aix" "$HOME/.pdtm/go/bin/aix"
@@ -287,6 +291,32 @@ check_and_install_tools() {
                         installed_or_updated=true
                     fi
                     ;;
+                ghauri)
+                    if [ -d "$HOME/tools/ghauri" ]; then
+                        (cd "$HOME/tools/ghauri" && git pull >/dev/null 2>&1)
+                    else
+                        git clone https://github.com/r0oth3x49/ghauri.git "$HOME/tools/ghauri" >/dev/null 2>&1
+                    fi
+                    python3 -m venv "$HOME/tools/ghauri/venv" >/dev/null 2>&1
+                    (
+                        source "$HOME/tools/ghauri/venv/bin/activate"
+                        pip3 install --upgrade -r "$HOME/tools/ghauri/requirements.txt" >/dev/null 2>&1
+                        python3 "$HOME/tools/ghauri/setup.py" install >/dev/null 2>&1
+                    )
+                    echo -e '#!/bin/bash\nsource "$HOME/tools/ghauri/venv/bin/activate"\nghauri "$@"' > "$HOME/tools/ghauri/ghauri-launcher"
+                    chmod +x "$HOME/tools/ghauri/ghauri-launcher"
+                    echo $PASSWORD | sudo -S ln -sf "$HOME/tools/ghauri/ghauri-launcher" /usr/local/bin/ghauri
+                    if [ -f "/usr/local/bin/ghauri" ]; then
+                        installed_or_updated=true
+                    fi
+                    ;;
+                dalfox)
+                    go install -v github.com/hahwul/dalfox/v2@latest >/dev/null 2>&1
+                    echo $PASSWORD | sudo -S cp ~/go/bin/dalfox /usr/local/bin/ >/dev/null 2>&1 && installed_or_updated=true
+                    ;;
+                trufflehog)
+                    curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin >/dev/null 2>&1 && installed_or_updated=true
+                    ;;
                 *)
                     installed_or_updated=true
                     ;;
@@ -369,6 +399,32 @@ check_and_install_tools() {
                     if [ -f "/usr/local/bin/hexstrike-ai" ]; then
                         installed_or_updated=true
                     fi
+                    ;;
+                ghauri)
+                    if [ -d "$HOME/tools/ghauri" ]; then
+                        (cd "$HOME/tools/ghauri" && git pull >/dev/null 2>&1)
+                    else
+                        git clone https://github.com/r0oth3x49/ghauri.git "$HOME/tools/ghauri" >/dev/null 2>&1
+                    fi
+                    python3 -m venv "$HOME/tools/ghauri/venv" >/dev/null 2>&1
+                    (
+                        source "$HOME/tools/ghauri/venv/bin/activate"
+                        pip3 install --upgrade -r "$HOME/tools/ghauri/requirements.txt" >/dev/null 2>&1
+                        python3 "$HOME/tools/ghauri/setup.py" install >/dev/null 2>&1
+                    )
+                    echo -e '#!/bin/bash\nsource "$HOME/tools/ghauri/venv/bin/activate"\nghauri "$@"' > "$HOME/tools/ghauri/ghauri-launcher"
+                    chmod +x "$HOME/tools/ghauri/ghauri-launcher"
+                    echo $PASSWORD | sudo -S ln -sf "$HOME/tools/ghauri/ghauri-launcher" /usr/local/bin/ghauri
+                    if [ -f "/usr/local/bin/ghauri" ]; then
+                        installed_or_updated=true
+                    fi
+                    ;;
+                dalfox)
+                    go install -v github.com/hahwul/dalfox/v2@latest >/dev/null 2>&1
+                    echo $PASSWORD | sudo -S cp ~/go/bin/dalfox /usr/local/bin/ >/dev/null 2>&1 && installed_or_updated=true
+                    ;;
+                trufflehog)
+                    curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin >/dev/null 2>&1 && installed_or_updated=true
                     ;;
                 Ph.Sh-Subdomain)
                     if [ -d "$HOME/tools/Ph.Sh-Subdomain" ]; then
