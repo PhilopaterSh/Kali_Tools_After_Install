@@ -56,7 +56,7 @@ setup_zsh_path() {
 REQUIRED_TOOLS=(
     amass anew assetfinder curl dirb dirsearch feroxbuster ffuf figlet gemini
     jsfinder jq nmap nikto update-fingerprints waybacklister wget whatweb hexstrike-ai Ph.Sh-Subdomain
-    ghauri dalfox trufflehog findomain
+    ghauri dalfox trufflehog findomain knockpy
 )
 
 PDTM_TOOLS=(
@@ -220,7 +220,7 @@ check_and_install_tools() {
         if command -v "$tool" &>/dev/null; then
 
             case $tool in
-                figlet|ffuf|jq|nikto|feroxbuster|whatweb|curl|wget|dirb|nmap|subfinder|findomain)
+                figlet|ffuf|jq|nikto|feroxbuster|whatweb|curl|wget|dirb|nmap|subfinder|findomain|knockpy)
                     echo $PASSWORD | sudo -S apt-get --only-upgrade install -y "$tool" >/dev/null 2>&1 && installed_or_updated=true
                     ;;
                 assetfinder|anew)
@@ -337,7 +337,7 @@ check_and_install_tools() {
         else
 
             case $tool in
-                figlet|ffuf|jq|nikto|feroxbuster|whatweb|curl|wget|dirb|nmap|subfinder|findomain)
+                figlet|ffuf|jq|nikto|feroxbuster|whatweb|curl|wget|dirb|nmap|subfinder|findomain|knockpy)
                     echo $PASSWORD | sudo -S apt update >/dev/null 2>&1 && echo $PASSWORD | sudo -S apt install -y "$tool" >/dev/null 2>&1 && installed_or_updated=true
                     ;;
                 assetfinder|anew)

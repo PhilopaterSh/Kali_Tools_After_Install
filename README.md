@@ -145,10 +145,10 @@ The script installs and updates tools from various sources:
 -   `findomain`
 -   `gemini` (Google Gemini CLI)
 -   `hexstrike-ai`
--   `jsfinder`
+ -   `jsfinder`
 -   `jq`
--   `nmap`
--   `nikto`
+-   `knockpy`
+-   `nmap`-   `nikto`
 -   `Ph.Sh-Subdomain`
 -   `update-fingerprints`
 -   `waybacklister`
@@ -181,6 +181,7 @@ Tools for discovering subdomains, IPs, and other assets related to a target.
 -   `urlfinder`
 -   `Ph.Sh-Subdomain`
 -   `findomain`
+-   `knockpy`
 
 ### Content Discovery & Scanning
 Tools for finding hidden files, directories, and endpoints on web servers.
