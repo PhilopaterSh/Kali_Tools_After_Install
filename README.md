@@ -156,6 +156,7 @@ The script installs and updates tools from various sources:
 -   `whatweb`
 -   `massdns`
 -   `seclists`
+-   `sshpass`
 -   `Visual Studio Code`
 
 ## Tool Categories
@@ -232,6 +233,7 @@ Helper scripts, wordlists, and other essential tools.
 -   `cdncheck`
 -   `tunnelx`
 -   `aix`
+-   `sshpass`
 
 ## Important Notes
 

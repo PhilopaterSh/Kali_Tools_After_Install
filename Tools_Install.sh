@@ -581,6 +581,19 @@ install_additional_tools() {
     else
         echo -e "${GREEN}[✓] seclists is already installed.${NC}"
     fi
+
+    # Install sshpass
+    if ! command -v sshpass &>/dev/null; then
+        echo -e "${BLUE}[+] Installing sshpass...${NC}"
+        echo $PASSWORD | sudo -S apt-get install -y sshpass >/dev/null 2>&1
+        if command -v sshpass &>/dev/null; then
+            echo -e "${GREEN}[✓] sshpass installed successfully.${NC}"
+        else
+            echo -e "${RED}[✗] Failed to install sshpass.${NC}"
+        fi
+    else
+        echo -e "${GREEN}[✓] sshpass is already installed.${NC}"
+    fi
 }
 
 install_additional_tools
