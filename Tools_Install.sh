@@ -1,8 +1,4 @@
 #!/bin/bash
-
-
-
-
 # Author    : Ph.sh (Philopater Shenouda)
 # Version   : 13
 # Updated   : 2025-09-23
@@ -55,7 +51,7 @@ setup_zsh_path() {
 # === Required Tools ===
 REQUIRED_TOOLS=(
     amass anew assetfinder curl dirb dirsearch feroxbuster ffuf figlet gemini
-    jsfinder jq nmap nikto update-fingerprints waybacklister wget whatweb hexstrike-ai Ph.Sh-Subdomain
+    jsfinder jq nmap nikto update-fingerprints waybacklister wget whatweb hexstrike-ai Ph.Sh-Subdomain Ph.Sh_url
     ghauri dalfox trufflehog findomain knockpy
 )
 
@@ -222,15 +218,15 @@ check_and_install_tools() {
             case $tool in
                 figlet|ffuf|jq|nikto|feroxbuster|whatweb|curl|wget|dirb|nmap|subfinder|findomain|knockpy)
                     echo $PASSWORD | sudo -S apt-get --only-upgrade install -y "$tool" >/dev/null 2>&1 && installed_or_updated=true
-                    ;;
+                    ;; 
                 assetfinder|anew)
                     go install -v github.com/tomnomnom/"$tool"@latest >/dev/null 2>&1
                     echo $PASSWORD | sudo -S cp ~/go/bin/"$tool" /usr/local/bin/ >/dev/null 2>&1 && installed_or_updated=true
-                    ;;
+                    ;; 
                 update-fingerprints)
                     go install -v github.com/projectdiscovery/wappalyzergo/cmd/update-fingerprints@latest >/dev/null 2>&1
                     echo $PASSWORD | sudo -S cp ~/go/bin/update-fingerprints /usr/local/bin/update-fingerprints >/dev/null 2>&1 && installed_or_updated=true
-                    ;;
+                    ;; 
                 dirsearch)
                     if [ -d "$HOME/tools/dirsearch" ]; then
                         (cd "$HOME/tools/dirsearch" && git pull >/dev/null 2>&1)
@@ -241,7 +237,7 @@ check_and_install_tools() {
                     if [ -f "/usr/local/bin/dirsearch" ]; then
                         installed_or_updated=true
                     fi
-                    ;;
+                    ;; 
                 waybacklister)
                     if [ -d "$HOME/tools/waybacklister" ]; then
                         (cd "$HOME/tools/waybacklister" && git pull >/dev/null 2>&1)
@@ -257,7 +253,7 @@ check_and_install_tools() {
                     if [ -f "/usr/local/bin/waybacklister" ]; then
                         installed_or_updated=true
                     fi
-                    ;;
+                    ;; 
                 jsfinder)
                     if [ -d "$HOME/tools/jsfinder" ]; then
                         (cd "$HOME/tools/jsfinder" && git pull >/dev/null 2>&1)
@@ -265,15 +261,15 @@ check_and_install_tools() {
                         git clone https://github.com/003random/JsFinder.git "$HOME/tools/jsfinder" >/dev/null 2>&1
                     fi
                     echo $PASSWORD | sudo -S ln -sf "$HOME/tools/jsfinder/JsFinder.py" /usr/local/bin/jsfinder >/dev/null 2>&1 && installed_or_updated=true
-                    ;;
+                    ;; 
                 nuclei)
                     go install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest >/dev/null 2>&1
                     echo $PASSWORD | sudo -S cp ~/go/bin/nuclei /usr/local/bin/ >/dev/null 2>&1
                     nuclei -update-templates >/dev/null 2>&1 && installed_or_updated=true
-                    ;;
+                    ;; 
                 gemini)
                     echo $PASSWORD | sudo -S npm install -g @google/gemini-cli >/dev/null 2>&1 && installed_or_updated=true
-                    ;;
+                    ;; 
                 hexstrike-ai)
                     if [ -d "$HOME/tools/hexstrike-ai" ]; then
                         (cd "$HOME/tools/hexstrike-ai" && git pull >/dev/null 2>&1)
@@ -291,7 +287,7 @@ check_and_install_tools() {
                     if [ -f "/usr/local/bin/hexstrike-ai" ]; then
                         installed_or_updated=true
                     fi
-                    ;;
+                    ;; 
                 ghauri)
                     if [ -d "$HOME/tools/ghauri" ]; then
                         (cd "$HOME/tools/ghauri" && git pull >/dev/null 2>&1)
@@ -310,14 +306,14 @@ check_and_install_tools() {
                     if [ -f "/usr/local/bin/ghauri" ]; then
                         installed_or_updated=true
                     fi
-                    ;;
+                    ;; 
                 dalfox)
                     go install -v github.com/hahwul/dalfox/v2@latest >/dev/null 2>&1
                     echo $PASSWORD | sudo -S cp ~/go/bin/dalfox /usr/local/bin/ >/dev/null 2>&1 && installed_or_updated=true
-                    ;;
+                    ;; 
                 trufflehog)
                     curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin >/dev/null 2>&1 && installed_or_updated=true
-                    ;;
+                    ;; 
                 Ph.Sh-Subdomain)
                     if [ -d "$HOME/tools/Ph.Sh-Subdomain" ]; then
                         (cd "$HOME/tools/Ph.Sh-Subdomain" && git pull >/dev/null 2>&1)
@@ -327,31 +323,37 @@ check_and_install_tools() {
                     pip3 install --break-system-packages -r "$HOME/tools/Ph.Sh-Subdomain/requirements.txt" >/dev/null 2>&1
                     (cd "$HOME/tools/Ph.Sh-Subdomain" && go build >/dev/null 2>&1)
                     if [ -f "$HOME/tools/Ph.Sh-Subdomain/Ph.Sh-Subdomain" ]; then
-                        cp "$HOME/tools/Ph.Sh-Subdomain/Ph.Sh-Subdomain" "$(go env GOPATH)/bin/" >/dev/null 2>&1 && installed_or_updated=true
+                        echo $PASSWORD | sudo -S mv "$HOME/tools/Ph.Sh-Subdomain/Ph.Sh-Subdomain" /usr/local/bin/ >/dev/null 2>&1 && installed_or_updated=true
                     fi
-                    ;;
+                    ;; 
+                Ph.Sh_url)
+                    go install -v github.com/PhilopaterSh/Ph.Sh_url@latest >/dev/null 2>&1
+                    if [ -f "$(go env GOPATH)/bin/Ph.Sh_url" ]; then
+                        echo $PASSWORD | sudo -S mv "$(go env GOPATH)/bin/Ph.Sh_url" /usr/local/bin/ >/dev/null 2>&1 && installed_or_updated=true
+                    fi
+                    ;; 
                 *)
                     installed_or_updated=true
-                    ;;
+                    ;; 
             esac
         else
 
             case $tool in
                 figlet|ffuf|jq|nikto|feroxbuster|whatweb|curl|wget|dirb|nmap|subfinder|findomain|knockpy)
                     echo $PASSWORD | sudo -S apt update >/dev/null 2>&1 && echo $PASSWORD | sudo -S apt install -y "$tool" >/dev/null 2>&1 && installed_or_updated=true
-                    ;;
+                    ;; 
                 assetfinder|anew)
                     go install -v github.com/tomnomnom/"$tool"@latest >/dev/null 2>&1
                     echo $PASSWORD | sudo -S cp ~/go/bin/"$tool" /usr/local/bin/ >/dev/null 2>&1 && installed_or_updated=true
-                    ;;
+                    ;; 
                 update-fingerprints)
                     go install -v github.com/projectdiscovery/wappalyzergo/cmd/update-fingerprints@latest >/dev/null 2>&1
                     echo $PASSWORD | sudo -S cp ~/go/bin/update-fingerprints /usr/local/bin/update-fingerprints >/dev/null 2>&1 && installed_or_updated=true
-                    ;;
+                    ;; 
                 amass)
                     go install -v github.com/owasp-amass/amass/v4/...@latest >/dev/null 2>&1
                     echo $PASSWORD | sudo -S cp ~/go/bin/amass /usr/local/bin/ >/dev/null 2>&1 && installed_or_updated=true
-                    ;;
+                    ;; 
                 dirsearch)
                     if [ -d "$HOME/tools/dirsearch" ]; then
                         (cd "$HOME/tools/dirsearch" && git pull >/dev/null 2>&1)
@@ -362,7 +364,7 @@ check_and_install_tools() {
                     if [ -f "/usr/local/bin/dirsearch" ]; then
                         installed_or_updated=true
                     fi
-                    ;;
+                    ;; 
                 waybacklister)
                     if [ -d "$HOME/tools/waybacklister" ]; then
                         (cd "$HOME/tools/waybacklister" && git pull >/dev/null 2>&1)
@@ -378,7 +380,7 @@ check_and_install_tools() {
                     if [ -f "/usr/local/bin/waybacklister" ]; then
                         installed_or_updated=true
                     fi
-                    ;;
+                    ;; 
                 jsfinder)
                     if [ -d "$HOME/tools/jsfinder" ]; then
                         (cd "$HOME/tools/jsfinder" && git pull >/dev/null 2>&1)
@@ -386,15 +388,15 @@ check_and_install_tools() {
                         git clone https://github.com/003random/JsFinder.git "$HOME/tools/jsfinder" >/dev/null 2>&1
                     fi
                     echo $PASSWORD | sudo -S ln -sf "$HOME/tools/jsfinder/JsFinder.py" /usr/local/bin/jsfinder >/dev/null 2>&1 && installed_or_updated=true
-                    ;;
+                    ;; 
                 nuclei)
                     go install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest >/dev/null 2>&1
                     echo $PASSWORD | sudo -S cp ~/go/bin/nuclei /usr/local/bin/ >/dev/null 2>&1
                     nuclei -update-templates >/dev/null 2>&1 && installed_or_updated=true
-                    ;;
+                    ;; 
                 gemini)
                     echo $PASSWORD | sudo -S npm install -g @google/gemini-cli >/dev/null 2>&1 && installed_or_updated=true
-                    ;;
+                    ;; 
                 hexstrike-ai)
                     if [ -d "$HOME/tools/hexstrike-ai" ]; then
                         (cd "$HOME/tools/hexstrike-ai" && git pull >/dev/null 2>&1)
@@ -412,7 +414,7 @@ check_and_install_tools() {
                     if [ -f "/usr/local/bin/hexstrike-ai" ]; then
                         installed_or_updated=true
                     fi
-                    ;;
+                    ;; 
                 ghauri)
                     if [ -d "$HOME/tools/ghauri" ]; then
                         (cd "$HOME/tools/ghauri" && git pull >/dev/null 2>&1)
@@ -431,14 +433,14 @@ check_and_install_tools() {
                     if [ -f "/usr/local/bin/ghauri" ]; then
                         installed_or_updated=true
                     fi
-                    ;;
+                    ;; 
                 dalfox)
                     go install -v github.com/hahwul/dalfox/v2@latest >/dev/null 2>&1
                     echo $PASSWORD | sudo -S cp ~/go/bin/dalfox /usr/local/bin/ >/dev/null 2>&1 && installed_or_updated=true
-                    ;;
+                    ;; 
                 trufflehog)
                     curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin >/dev/null 2>&1 && installed_or_updated=true
-                    ;;
+                    ;; 
                 Ph.Sh-Subdomain)
                     if [ -d "$HOME/tools/Ph.Sh-Subdomain" ]; then
                         (cd "$HOME/tools/Ph.Sh-Subdomain" && git pull >/dev/null 2>&1)
@@ -448,11 +450,17 @@ check_and_install_tools() {
                     pip3 install --break-system-packages -r "$HOME/tools/Ph.Sh-Subdomain/requirements.txt" >/dev/null 2>&1
                     (cd "$HOME/tools/Ph.Sh-Subdomain" && go build >/dev/null 2>&1)
                     if [ -f "$HOME/tools/Ph.Sh-Subdomain/Ph.Sh-Subdomain" ]; then
-                        cp "$HOME/tools/Ph.Sh-Subdomain/Ph.Sh-Subdomain" "$(go env GOPATH)/bin/" >/dev/null 2>&1 && installed_or_updated=true
+                        echo $PASSWORD | sudo -S mv "$HOME/tools/Ph.Sh-Subdomain/Ph.Sh-Subdomain" /usr/local/bin/ >/dev/null 2>&1 && installed_or_updated=true
                     fi
-                    ;;
+                    ;; 
+                Ph.Sh_url)
+                    go install -v github.com/PhilopaterSh/Ph.Sh_url@latest >/dev/null 2>&1
+                    if [ -f "$(go env GOPATH)/bin/Ph.Sh_url" ]; then
+                        echo $PASSWORD | sudo -S mv "$(go env GOPATH)/bin/Ph.Sh_url" /usr/local/bin/ >/dev/null 2>&1 && installed_or_updated=true
+                    fi
+                    ;; 
                 *)
-                    ;;
+                    ;; 
             esac
         fi
         if $installed_or_updated; then
@@ -470,10 +478,18 @@ install_pdtm_tools() {
         pdtm -i "$tool" >/dev/null 2>&1
         if [ $? -eq 0 ]; then
             echo -e "${GREEN}[✓] $tool installed/updated.${NC}"
+            if [ -f "$HOME/.pdtm/go/bin/$tool" ]; then
+                echo $PASSWORD | sudo -S mv "$HOME/.pdtm/go/bin/$tool" /usr/local/bin/ >/dev/null 2>&1
+                if [ $? -eq 0 ]; then
+                    echo -e "${GREEN}[✓] $tool moved to /usr/local/bin.${NC}"
+                else
+                    echo -e "${RED}[✗] Failed to move $tool to /usr/local/bin.${NC}"
+                fi
+            fi
         else
             echo -e "${RED}[✗] Failed to install/update $tool.${NC}"
         fi
-    done
+d    done
 }
 
 # === Main Execution ===

@@ -2,20 +2,18 @@
 
 > **Note:** This script is actively and continuously updated to include new tools and features.
 
-This script automates the installation and updating of various reconnaissance and security tools commonly used in penetration testing and bug bounty hunting. It handles Go-based tools, apt-package installations, pipx installations, and git-cloned tools.
+This script automates the installation and updating of various reconnaissance and security tools commonly used in penetration testing and bug bounty hunting. It handles Go-based tools, apt-package installations, pipx installations, and git-cloned tools, moving their binaries to `/usr/local/bin` for immediate system-wide access.
 
 ## Features
 
--   **ZSH Setup:** Checks for ZSH installation and configures the `~/.zshrc` file with necessary PATH variables.
+-   **ZSH Setup:** Checks for ZSH installation and configures the `~/.zshrc` file.
 -   **Go Environment:** Ensures Go is installed and configures `GOPATH`.
 -   **Node.js & npm:** Installs Node.js and npm if not present.
--   **Docker & Docker Compose:** Installs Docker and Docker Compose if not present.
 -   **PDTM Tools:** Installs and updates a comprehensive list of ProjectDiscovery tools via `pdtm`.
--   **Additional Tools:** Installs Visual Studio Code, massdns, and seclists via apt and snap.
+-   **Global Access:** Automatically moves binaries for most Go-based and custom-built tools to `/usr/local/bin` for immediate availability in the PATH.
 -   **Other Tools:** Installs and updates a variety of other essential tools including:
-    -   `amass`, `anew`, `assetfinder`, `curl`, `dirb`, `dirsearch`, `feroxbuster`, `ffuf`, `figlet`, `gemini`, `jsfinder`, `jq`, `nmap`, `nikto`, `update-fingerprints`, `waybacklister`, `wget`, `whatweb`, `docker`, `docker-compose`.
+    -   `amass`, `anew`, `assetfinder`, `curl`, `dirb`, `dirsearch`, `feroxbuster`, `ffuf`, `figlet`, `gemini`, `jsfinder`, `jq`, `nmap`, `nikto`, `update-fingerprints`, `waybacklister`, `wget`, `whatweb`, `ghauri`, `dalfox`, `trufflehog`, `Ph.Sh-Subdomain`, `Ph.Sh_url`.
 -   **Python Environment:** Installs Python build dependencies and `pipx`.
--   **PATH Configuration:** Adds necessary Go and PDTM binary paths to `~/.bashrc` and `~/.zshrc`.
 -   **Installation Summary:** Provides a clear summary of successfully installed tools and those that encountered verification issues at the end of the execution.
 
 ## Usage
@@ -52,8 +50,6 @@ This script automates the installation and updating of various reconnaissance an
     - curl (/usr/bin/curl)
     - dirb (/usr/bin/dirb)
     - dirsearch (/usr/local/bin/dirsearch)
-    - docker (/usr/bin/docker)
-    - docker-compose (/usr/bin/docker-compose)
     - feroxbuster (/usr/bin/feroxbuster)
     - ffuf (/usr/bin/ffuf)
     - figlet (/usr/bin/figlet)
@@ -66,32 +62,32 @@ This script automates the installation and updating of various reconnaissance an
     - waybacklister (/usr/local/bin/waybacklister)
     - wget (/usr/bin/wget)
     - whatweb (/usr/bin/whatweb)
-    - aix ($HOME/.pdtm/go/bin/aix)
-    - alterx ($HOME/.pdtm/go/bin/alterx)
-    - asnmap ($HOME/.pdtm/go/bin/asnmap)
+    - aix (/usr/local/bin/aix)
+    - alterx (/usr/local/bin/alterx)
+    - asnmap (/usr/local/bin/asnmap)
     - cdncheck (/usr/local/bin/cdncheck)
-    - chaos-client ($HOME/.pdtm/go/bin/chaos-client)
-    - cloudlist ($HOME/.pdtm/go/bin/cloudlist)
+    - chaos-client (/usr/local/bin/chaos-client)
+    - cloudlist (/usr/local/bin/cloudlist)
     - dnsx (/usr/local/bin/dnsx)
     - httpx (/usr/local/bin/httpx)
-    - interactsh-client ($HOME/.pdtm/go/bin/interactsh-client)
-    - interactsh-server ($HOME/.pdtm/go/bin/interactsh-server)
+    - interactsh-client (/usr/local/bin/interactsh-client)
+    - interactsh-server (/usr/local/bin/interactsh-server)
     - katana (/usr/local/bin/katana)
-    - mapcidr ($HOME/.pdtm/go/bin/mapcidr)
-    - naabu ($HOME/.pdtm/go/bin/naabu)
-    - notify ($HOME/.pdtm/go/bin/notify)
+    - mapcidr (/usr/local/bin/mapcidr)
+    - naabu (/usr/local/bin/naabu)
+    - notify (/usr/local/bin/notify)
     - nuclei (/usr/local/bin/nuclei)
     - pdtm (/usr/local/bin/pdtm)
-    - proxify ($HOME/.pdtm/go/bin/proxify)
-    - shuffledns ($HOME/.pdtm/go/bin/shuffledns)
-    - simplehttpserver ($HOME/.pdtm/go/bin/simplehttpserver)
+    - proxify (/usr/local/bin/proxify)
+    - shuffledns (/usr/local/bin/shuffledns)
+    - simplehttpserver (/usr/local/bin/simplehttpserver)
     - subfinder (/usr/bin/subfinder)
-    - tldfinder ($HOME/.pdtm/go/bin/tldfinder)
-    - tlsx ($HOME/.pdtm/go/bin/tlsx)
-    - tunnelx ($HOME/.pdtm/go/bin/tunnelx)
-    - uncover ($HOME/.pdtm/go/bin/uncover)
-    - urlfinder ($HOME/.pdtm/go/bin/urlfinder)
-    - vulnx ($HOME/.pdtm/go/bin/vulnx)
+    - tldfinder (/usr/local/bin/tldfinder)
+    - tlsx (/usr/local/bin/tlsx)
+    - tunnelx (/usr/local/bin/tunnelx)
+    - uncover (/usr/local/bin/uncover)
+    - urlfinder (/usr/local/bin/urlfinder)
+    - vulnx (/usr/local/bin/vulnx)
 [✓] All tools verified successfully.
 ----------------------------
 ```
@@ -135,21 +131,24 @@ The script installs and updates tools from various sources:
 -   `anew`
 -   `assetfinder`
 -   `curl`
+-   `dalfox`
 -   `dirb`
 -   `dirsearch`
--   `docker`
--   `docker-compose`
 -   `feroxbuster`
 -   `ffuf`
 -   `figlet`
 -   `findomain`
 -   `gemini` (Google Gemini CLI)
+-   `ghauri`
 -   `hexstrike-ai`
- -   `jsfinder`
+-   `jsfinder`
 -   `jq`
 -   `knockpy`
--   `nmap`-   `nikto`
+-   `nmap`
+-   `nikto`
 -   `Ph.Sh-Subdomain`
+-   `Ph.Sh_url`
+-   `trufflehog`
 -   `update-fingerprints`
 -   `waybacklister`
 -   `wget`
@@ -164,11 +163,9 @@ The script installs and updates tools from various sources:
 Here is a categorization of the installed tools based on their primary function in a security workflow.
 
 ### AI-Powered Security
-Tools that leverage AI for automated security tasks.
 -   `hexstrike-ai`
 
 ### Information Gathering & Asset Discovery
-Tools for discovering subdomains, IPs, and other assets related to a target.
 -   `amass`
 -   `assetfinder`
 -   `subfinder`
@@ -181,19 +178,22 @@ Tools for discovering subdomains, IPs, and other assets related to a target.
 -   `jsfinder`
 -   `urlfinder`
 -   `Ph.Sh-Subdomain`
+-   `Ph.Sh_url`
 -   `findomain`
 -   `knockpy`
 
 ### Content Discovery & Scanning
-Tools for finding hidden files, directories, and endpoints on web servers.
 -   `dirb`
 -   `dirsearch`
 -   `feroxbuster`
 -   `ffuf`
 -   `katana`
 
+### Web Application Analysis
+-   `dalfox` (XSS Scanner)
+-   `ghauri` (SQLi Scanner)
+
 ### Network & Vulnerability Scanning
-Tools for scanning networks, ports, and known vulnerabilities.
 -   `nmap`
 -   `naabu`
 -   `nikto`
@@ -202,8 +202,10 @@ Tools for scanning networks, ports, and known vulnerabilities.
 -   `tlsx`
 -   `interactsh-client` / `server`
 
+### Code & Secret Scanning
+-   `trufflehog`
+
 ### DNS Tools
-Utilities for DNS enumeration, resolution, and manipulation.
 -   `dnsx`
 -   `massdns`
 -   `shuffledns`
@@ -211,20 +213,17 @@ Utilities for DNS enumeration, resolution, and manipulation.
 -   `mapcidr`
 
 ### Web Interaction Tools
-Tools for making HTTP requests and interacting with web services.
 -   `httpx`
 -   `curl`
 -   `wget`
 -   `proxify`
 
 ### Utilities & Miscellaneous Tools
-Helper scripts, wordlists, and other essential tools.
 -   `anew`
 -   `jq`
 -   `seclists`
 -   `pdtm`
 -   `Visual Studio Code`
--   `docker` / `docker-compose`
 -   `gemini`
 -   `figlet`
 -   `notify`
@@ -237,6 +236,6 @@ Helper scripts, wordlists, and other essential tools.
 
 ## Important Notes
 
--   After running the script, you may need to restart your terminal or run `source ~/.bashrc` or `source ~/.zshrc` for the new PATH variables to take effect.
--   Review the installation summary at the end to identify any tools that failed to install or update correctly.
--   **Security Warning:** The script contains a hardcoded `PASSWORD` variable. Change this to your actual `sudo` password or modify the script to prompt for the password securely if you intend to use it in a production environment.
+-   **Sudo Password:** The script contains a hardcoded `PASSWORD` variable. Change this to your actual `sudo` password.
+-   **Shell Restart:** While the script moves most binaries for immediate access, it's still good practice to restart your terminal or run `source ~/.bashrc` or `source ~/.zshrc` after execution to ensure all PATH changes are applied.
+-   **Verification:** Review the installation summary at the end to identify any tools that failed to install or update correctly.
