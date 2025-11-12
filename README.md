@@ -4,7 +4,16 @@
 
 This script automates the installation and updating of various reconnaissance and security tools commonly used in penetration testing and bug bounty hunting. It handles Go-based tools, apt-package installations, pipx installations, and git-cloned tools, moving their binaries to `/usr/local/bin` for immediate system-wide access.
 
-## Features
+## 📜 Table of Contents
+
+- [✨ Features](#-features)
+- [👨‍💻 Usage](#-usage)
+- [📊 Sample Output](#-sample-output)
+- [🛠️ Tools Installed/Updated](#️-tools-installedupdated)
+- [🧰 Tool Categories](#-tool-categories)
+- [⚠️ Important Notes](#️-important-notes)
+
+## ✨ Features
 
 -   **ZSH Setup:** Checks for ZSH installation and configures the `~/.zshrc` file.
 -   **Go Environment:** Ensures Go is installed and configures `GOPATH`.
@@ -16,7 +25,7 @@ This script automates the installation and updating of various reconnaissance an
 -   **Python Environment:** Installs Python build dependencies and `pipx`.
 -   **Installation Summary:** Provides a clear summary of successfully installed tools and those that encountered verification issues at the end of the execution.
 
-## Usage
+## 👨‍💻 Usage
 
 1.  **Set Your Password:**
     This script requires `sudo` privileges for many installations. Before running, you **must** open the `Tools_Install.sh` file and change the `PASSWORD` variable to your own `sudo` password.
@@ -37,7 +46,7 @@ This script automates the installation and updating of various reconnaissance an
     ./Tools_Install.sh
     ```
 
-## Sample Output
+## 📊 Sample Output
 
 ```
 [+] Verifying tool installations...
@@ -47,56 +56,14 @@ This script automates the installation and updating of various reconnaissance an
     - amass (/usr/bin/amass)
     - anew (/usr/local/bin/anew)
     - assetfinder (/usr/local/bin/assetfinder)
-    - curl (/usr/bin/curl)
-    - dirb (/usr/bin/dirb)
-    - dirsearch (/usr/local/bin/dirsearch)
-    - feroxbuster (/usr/bin/feroxbuster)
-    - ffuf (/usr/bin/ffuf)
-    - figlet (/usr/bin/figlet)
-    - gemini (/usr/local/bin/gemini)
-    - jsfinder (/usr/local/bin/jsfinder)
-    - jq (/usr/bin/jq)
-    - nmap (/usr/bin/nmap)
-    - nikto (/usr/bin/nikto)
-    - update-fingerprints (/usr/local/bin/update-fingerprints)
-    - waybacklister (/usr/local/bin/waybacklister)
-    - wget (/usr/bin/wget)
-    - whatweb (/usr/bin/whatweb)
-    - aix (/usr/local/bin/aix)
-    - alterx (/usr/local/bin/alterx)
-    - asnmap (/usr/local/bin/asnmap)
-    - cdncheck (/usr/local/bin/cdncheck)
-    - chaos-client (/usr/local/bin/chaos-client)
-    - cloudlist (/usr/local/bin/cloudlist)
-    - dnsx (/usr/local/bin/dnsx)
-    - httpx (/usr/local/bin/httpx)
-    - interactsh-client (/usr/local/bin/interactsh-client)
-    - interactsh-server (/usr/local/bin/interactsh-server)
-    - katana (/usr/local/bin/katana)
-    - mapcidr (/usr/local/bin/mapcidr)
-    - naabu (/usr/local/bin/naabu)
-    - notify (/usr/local/bin/notify)
-    - nuclei (/usr/local/bin/nuclei)
-    - pdtm (/usr/local/bin/pdtm)
-    - proxify (/usr/local/bin/proxify)
-    - shuffledns (/usr/local/bin/shuffledns)
-    - simplehttpserver (/usr/local/bin/simplehttpserver)
-    - subfinder (/usr/bin/subfinder)
-    - tldfinder (/usr/local/bin/tldfinder)
-    - tlsx (/usr/local/bin/tlsx)
-    - tunnelx (/usr/local/bin/tunnelx)
-    - uncover (/usr/local/bin/uncover)
-    - urlfinder (/usr/local/bin/urlfinder)
-    - vulnx (/usr/local/bin/vulnx)
+    - ... (and many more)
 [✓] All tools verified successfully.
 ----------------------------
 ```
 
-## Tools Installed/Updated
+## 🛠️ Tools Installed/Updated
 
-The script installs and updates tools from various sources:
-
-### PDTM (ProjectDiscovery Tools Manager) Tools
+### ProjectDiscovery Tools (via PDTM)
 
 -   `aix`
 -   `alterx`
@@ -125,7 +92,7 @@ The script installs and updates tools from various sources:
 -   `urlfinder`
 -   `vulnx`
 
-### Other Tools
+### Other Security Tools
 
 -   `amass`
 -   `anew`
@@ -158,9 +125,7 @@ The script installs and updates tools from various sources:
 -   `sshpass`
 -   `Visual Studio Code`
 
-## Tool Categories
-
-Here is a categorization of the installed tools based on their primary function in a security workflow.
+## 🧰 Tool Categories
 
 ### AI-Powered Security
 -   `hexstrike-ai`
@@ -234,8 +199,19 @@ Here is a categorization of the installed tools based on their primary function 
 -   `aix`
 -   `sshpass`
 
-## Important Notes
+## ⚠️ Important Notes
 
 -   **Sudo Password:** The script contains a hardcoded `PASSWORD` variable. Change this to your actual `sudo` password.
 -   **Shell Restart:** While the script moves most binaries for immediate access, it's still good practice to restart your terminal or run `source ~/.bashrc` or `source ~/.zshrc` after execution to ensure all PATH changes are applied.
 -   **Verification:** Review the installation summary at the end to identify any tools that failed to install or update correctly.
+
+## 🙏 Support My Work
+
+If you find my work useful, please consider supporting me. It helps me to dedicate more time to open-source projects.
+
+<div align="center">
+
+[<img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" width="217" height="50">](https://www.buymeacoffee.com/PhilopaterSh)
+
+</div>
+
