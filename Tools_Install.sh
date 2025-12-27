@@ -489,7 +489,7 @@ install_pdtm_tools() {
         else
             echo -e "${RED}[✗] Failed to install/update $tool.${NC}"
         fi
-d    done
+    done
 }
 
 # === Main Execution ===
