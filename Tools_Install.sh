@@ -11,8 +11,6 @@ YELLOW='\033[1;33m'
 BLUE='\033[1;34m'
 NC='\033[0m'
 
-# === Password ===
-PASSWORD="kali"
 
 # === ZSH Setup and PATH Configuration ===
 setup_zsh_path() {
@@ -22,7 +20,7 @@ setup_zsh_path() {
     if ! command -v zsh &>/dev/null; then
         echo -e "${YELLOW}[!] ZSH is not installed. Please install ZSH for full functionality.${NC}"
         # Optionally, you could add installation instructions here, e.g.:
-        # echo $PASSWORD | sudo -S apt install -y zsh
+        # sudo apt install -y zsh
     else
         echo -e "${GREEN}[✓] ZSH is installed.${NC}"
     fi
@@ -182,8 +180,8 @@ verify_installations() {
 check_go() {
     if ! command -v go &>/dev/null; then
         echo -e "${BLUE}[+] Installing Go...${NC}"
-        echo $PASSWORD | sudo -S apt update >/dev/null 2>&1
-        echo $PASSWORD | sudo -S apt install -y golang >/dev/null 2>&1
+        sudo apt update >/dev/null 2>&1
+        sudo apt install -y golang >/dev/null 2>&1
         if command -v go &>/dev/null; then
             echo -e "${GREEN}[✓] Go installed successfully${NC}"
         else
@@ -197,8 +195,8 @@ check_go() {
 check_node() {
     if ! command -v node &>/dev/null || ! command -v npm &>/dev/null; then
         echo -e "${BLUE}[+] Installing Node.js and npm...${NC}"
-        echo $PASSWORD | sudo -S apt update >/dev/null 2>&1
-        echo $PASSWORD | sudo -S apt install -y nodejs npm >/dev/null 2>&1
+        sudo apt update >/dev/null 2>&1
+        sudo apt install -y nodejs npm >/dev/null 2>&1
         if command -v node &>/dev/null && command -v npm &>/dev/null; then
             echo -e "${GREEN}[✓] Node.js and npm installed successfully${NC}"
         else
@@ -217,15 +215,15 @@ check_and_install_tools() {
 
             case $tool in
                 figlet|ffuf|jq|nikto|feroxbuster|whatweb|curl|wget|dirb|nmap|subfinder|findomain|knockpy)
-                    echo $PASSWORD | sudo -S apt-get --only-upgrade install -y "$tool" >/dev/null 2>&1 && installed_or_updated=true
+                    sudo apt-get --only-upgrade install -y "$tool" >/dev/null 2>&1 && installed_or_updated=true
                     ;; 
                 assetfinder|anew)
                     go install -v github.com/tomnomnom/"$tool"@latest >/dev/null 2>&1
-                    echo $PASSWORD | sudo -S cp ~/go/bin/"$tool" /usr/local/bin/ >/dev/null 2>&1 && installed_or_updated=true
+                    sudo cp ~/go/bin/"$tool" /usr/local/bin/ >/dev/null 2>&1 && installed_or_updated=true
                     ;; 
                 update-fingerprints)
                     go install -v github.com/projectdiscovery/wappalyzergo/cmd/update-fingerprints@latest >/dev/null 2>&1
-                    echo $PASSWORD | sudo -S cp ~/go/bin/update-fingerprints /usr/local/bin/update-fingerprints >/dev/null 2>&1 && installed_or_updated=true
+                    sudo cp ~/go/bin/update-fingerprints /usr/local/bin/update-fingerprints >/dev/null 2>&1 && installed_or_updated=true
                     ;; 
                 dirsearch)
                     if [ -d "$HOME/tools/dirsearch" ]; then
@@ -233,7 +231,7 @@ check_and_install_tools() {
                     else
                         git clone https://github.com/maurosoria/dirsearch.git "$HOME/tools/dirsearch" >/dev/null 2>&1
                     fi
-                    echo $PASSWORD | sudo -S ln -sf "$HOME/tools/dirsearch/dirsearch.py" /usr/local/bin/dirsearch
+                    sudo ln -sf "$HOME/tools/dirsearch/dirsearch.py" /usr/local/bin/dirsearch
                     if [ -f "/usr/local/bin/dirsearch" ]; then
                         installed_or_updated=true
                     fi
@@ -249,7 +247,7 @@ check_and_install_tools() {
                         source "$HOME/tools/waybacklister/venv/bin/activate"
                         pip3 install -r "$HOME/tools/waybacklister/requirements.txt" >/dev/null 2>&1
                     )
-                    echo $PASSWORD | sudo -S ln -sf "$HOME/tools/waybacklister/waybacklister.py" /usr/local/bin/waybacklister
+                    sudo ln -sf "$HOME/tools/waybacklister/waybacklister.py" /usr/local/bin/waybacklister
                     if [ -f "/usr/local/bin/waybacklister" ]; then
                         installed_or_updated=true
                     fi
@@ -260,15 +258,15 @@ check_and_install_tools() {
                     else
                         git clone https://github.com/003random/JsFinder.git "$HOME/tools/jsfinder" >/dev/null 2>&1
                     fi
-                    echo $PASSWORD | sudo -S ln -sf "$HOME/tools/jsfinder/JsFinder.py" /usr/local/bin/jsfinder >/dev/null 2>&1 && installed_or_updated=true
+                    sudo ln -sf "$HOME/tools/jsfinder/JsFinder.py" /usr/local/bin/jsfinder >/dev/null 2>&1 && installed_or_updated=true
                     ;; 
                 nuclei)
                     go install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest >/dev/null 2>&1
-                    echo $PASSWORD | sudo -S cp ~/go/bin/nuclei /usr/local/bin/ >/dev/null 2>&1
+                    sudo cp ~/go/bin/nuclei /usr/local/bin/ >/dev/null 2>&1
                     nuclei -update-templates >/dev/null 2>&1 && installed_or_updated=true
                     ;; 
                 gemini)
-                    echo $PASSWORD | sudo -S npm install -g @google/gemini-cli >/dev/null 2>&1 && installed_or_updated=true
+                    sudo npm install -g @google/gemini-cli >/dev/null 2>&1 && installed_or_updated=true
                     ;; 
                 hexstrike-ai)
                     if [ -d "$HOME/tools/hexstrike-ai" ]; then
@@ -283,7 +281,7 @@ check_and_install_tools() {
                     )
                     echo -e '#!/bin/bash\nsource "$HOME/tools/hexstrike-ai/venv/bin/activate"\npython "$HOME/tools/hexstrike-ai/server.py" "$@"' > "$HOME/tools/hexstrike-ai/hexstrike-ai"
                     chmod +x "$HOME/tools/hexstrike-ai/hexstrike-ai"
-                    echo $PASSWORD | sudo -S ln -sf "$HOME/tools/hexstrike-ai/hexstrike-ai" /usr/local/bin/hexstrike-ai
+                    sudo ln -sf "$HOME/tools/hexstrike-ai/hexstrike-ai" /usr/local/bin/hexstrike-ai
                     if [ -f "/usr/local/bin/hexstrike-ai" ]; then
                         installed_or_updated=true
                     fi
@@ -302,14 +300,14 @@ check_and_install_tools() {
                     )
                     echo -e '#!/bin/bash\nsource "$HOME/tools/ghauri/venv/bin/activate"\nghauri "$@"' > "$HOME/tools/ghauri/ghauri-launcher"
                     chmod +x "$HOME/tools/ghauri/ghauri-launcher"
-                    echo $PASSWORD | sudo -S ln -sf "$HOME/tools/ghauri/ghauri-launcher" /usr/local/bin/ghauri
+                    sudo ln -sf "$HOME/tools/ghauri/ghauri-launcher" /usr/local/bin/ghauri
                     if [ -f "/usr/local/bin/ghauri" ]; then
                         installed_or_updated=true
                     fi
                     ;; 
                 dalfox)
                     go install -v github.com/hahwul/dalfox/v2@latest >/dev/null 2>&1
-                    echo $PASSWORD | sudo -S cp ~/go/bin/dalfox /usr/local/bin/ >/dev/null 2>&1 && installed_or_updated=true
+                    sudo cp ~/go/bin/dalfox /usr/local/bin/ >/dev/null 2>&1 && installed_or_updated=true
                     ;; 
                 trufflehog)
                     curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin >/dev/null 2>&1 && installed_or_updated=true
@@ -320,16 +318,15 @@ check_and_install_tools() {
                     else
                         git clone https://github.com/PhilopaterSh/Ph.Sh-Subdomain.git "$HOME/tools/Ph.Sh-Subdomain" >/dev/null 2>&1
                     fi
-                    pip3 install --break-system-packages -r "$HOME/tools/Ph.Sh-Subdomain/requirements.txt" >/dev/null 2>&1
                     (cd "$HOME/tools/Ph.Sh-Subdomain" && go build >/dev/null 2>&1)
-                    if [ -f "$HOME/tools/Ph.Sh-Subdomain/Ph.Sh-Subdomain" ]; then
-                        echo $PASSWORD | sudo -S mv "$HOME/tools/Ph.Sh-Subdomain/Ph.Sh-Subdomain" /usr/local/bin/ >/dev/null 2>&1 && installed_or_updated=true
+                    if [ -f "$HOME/tools/Ph.Sh-Subdomain/Ph.Sh_Sub" ]; then
+                        sudo mv "$HOME/tools/Ph.Sh-Subdomain/Ph.Sh_Sub" /usr/local/bin/ >/dev/null 2>&1 && installed_or_updated=true
                     fi
                     ;; 
                 Ph.Sh_url)
                     go install -v github.com/PhilopaterSh/Ph.Sh_url@latest >/dev/null 2>&1
                     if [ -f "$(go env GOPATH)/bin/Ph.Sh_url" ]; then
-                        echo $PASSWORD | sudo -S mv "$(go env GOPATH)/bin/Ph.Sh_url" /usr/local/bin/ >/dev/null 2>&1 && installed_or_updated=true
+                        sudo mv "$(go env GOPATH)/bin/Ph.Sh_url" /usr/local/bin/ >/dev/null 2>&1 && installed_or_updated=true
                     fi
                     ;; 
                 *)
@@ -340,19 +337,19 @@ check_and_install_tools() {
 
             case $tool in
                 figlet|ffuf|jq|nikto|feroxbuster|whatweb|curl|wget|dirb|nmap|subfinder|findomain|knockpy)
-                    echo $PASSWORD | sudo -S apt update >/dev/null 2>&1 && echo $PASSWORD | sudo -S apt install -y "$tool" >/dev/null 2>&1 && installed_or_updated=true
+                    sudo apt update >/dev/null 2>&1 && sudo apt install -y "$tool" >/dev/null 2>&1 && installed_or_updated=true
                     ;; 
                 assetfinder|anew)
                     go install -v github.com/tomnomnom/"$tool"@latest >/dev/null 2>&1
-                    echo $PASSWORD | sudo -S cp ~/go/bin/"$tool" /usr/local/bin/ >/dev/null 2>&1 && installed_or_updated=true
+                    sudo cp ~/go/bin/"$tool" /usr/local/bin/ >/dev/null 2>&1 && installed_or_updated=true
                     ;; 
                 update-fingerprints)
                     go install -v github.com/projectdiscovery/wappalyzergo/cmd/update-fingerprints@latest >/dev/null 2>&1
-                    echo $PASSWORD | sudo -S cp ~/go/bin/update-fingerprints /usr/local/bin/update-fingerprints >/dev/null 2>&1 && installed_or_updated=true
+                    sudo cp ~/go/bin/update-fingerprints /usr/local/bin/update-fingerprints >/dev/null 2>&1 && installed_or_updated=true
                     ;; 
                 amass)
                     go install -v github.com/owasp-amass/amass/v4/...@latest >/dev/null 2>&1
-                    echo $PASSWORD | sudo -S cp ~/go/bin/amass /usr/local/bin/ >/dev/null 2>&1 && installed_or_updated=true
+                    sudo cp ~/go/bin/amass /usr/local/bin/ >/dev/null 2>&1 && installed_or_updated=true
                     ;; 
                 dirsearch)
                     if [ -d "$HOME/tools/dirsearch" ]; then
@@ -360,7 +357,7 @@ check_and_install_tools() {
                     else
                         git clone https://github.com/maurosoria/dirsearch.git "$HOME/tools/dirsearch" >/dev/null 2>&1
                     fi
-                    echo $PASSWORD | sudo -S ln -sf "$HOME/tools/dirsearch/dirsearch.py" /usr/local/bin/dirsearch
+                    sudo ln -sf "$HOME/tools/dirsearch/dirsearch.py" /usr/local/bin/dirsearch
                     if [ -f "/usr/local/bin/dirsearch" ]; then
                         installed_or_updated=true
                     fi
@@ -376,7 +373,7 @@ check_and_install_tools() {
                         source "$HOME/tools/waybacklister/venv/bin/activate"
                         pip3 install -r "$HOME/tools/waybacklister/requirements.txt" >/dev/null 2>&1
                     )
-                    echo $PASSWORD | sudo -S ln -sf "$HOME/tools/waybacklister/waybacklister.py" /usr/local/bin/waybacklister
+                    sudo ln -sf "$HOME/tools/waybacklister/waybacklister.py" /usr/local/bin/waybacklister
                     if [ -f "/usr/local/bin/waybacklister" ]; then
                         installed_or_updated=true
                     fi
@@ -387,15 +384,15 @@ check_and_install_tools() {
                     else
                         git clone https://github.com/003random/JsFinder.git "$HOME/tools/jsfinder" >/dev/null 2>&1
                     fi
-                    echo $PASSWORD | sudo -S ln -sf "$HOME/tools/jsfinder/JsFinder.py" /usr/local/bin/jsfinder >/dev/null 2>&1 && installed_or_updated=true
+                    sudo ln -sf "$HOME/tools/jsfinder/JsFinder.py" /usr/local/bin/jsfinder >/dev/null 2>&1 && installed_or_updated=true
                     ;; 
                 nuclei)
                     go install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest >/dev/null 2>&1
-                    echo $PASSWORD | sudo -S cp ~/go/bin/nuclei /usr/local/bin/ >/dev/null 2>&1
+                    sudo cp ~/go/bin/nuclei /usr/local/bin/ >/dev/null 2>&1
                     nuclei -update-templates >/dev/null 2>&1 && installed_or_updated=true
                     ;; 
                 gemini)
-                    echo $PASSWORD | sudo -S npm install -g @google/gemini-cli >/dev/null 2>&1 && installed_or_updated=true
+                    sudo npm install -g @google/gemini-cli >/dev/null 2>&1 && installed_or_updated=true
                     ;; 
                 hexstrike-ai)
                     if [ -d "$HOME/tools/hexstrike-ai" ]; then
@@ -410,7 +407,7 @@ check_and_install_tools() {
                     )
                     echo -e '#!/bin/bash\nsource "$HOME/tools/hexstrike-ai/venv/bin/activate"\npython "$HOME/tools/hexstrike-ai/server.py" "$@"' > "$HOME/tools/hexstrike-ai/hexstrike-ai"
                     chmod +x "$HOME/tools/hexstrike-ai/hexstrike-ai"
-                    echo $PASSWORD | sudo -S ln -sf "$HOME/tools/hexstrike-ai/hexstrike-ai" /usr/local/bin/hexstrike-ai
+                    sudo ln -sf "$HOME/tools/hexstrike-ai/hexstrike-ai" /usr/local/bin/hexstrike-ai
                     if [ -f "/usr/local/bin/hexstrike-ai" ]; then
                         installed_or_updated=true
                     fi
@@ -429,14 +426,14 @@ check_and_install_tools() {
                     )
                     echo -e '#!/bin/bash\nsource "$HOME/tools/ghauri/venv/bin/activate"\nghauri "$@"' > "$HOME/tools/ghauri/ghauri-launcher"
                     chmod +x "$HOME/tools/ghauri/ghauri-launcher"
-                    echo $PASSWORD | sudo -S ln -sf "$HOME/tools/ghauri/ghauri-launcher" /usr/local/bin/ghauri
+                    sudo ln -sf "$HOME/tools/ghauri/ghauri-launcher" /usr/local/bin/ghauri
                     if [ -f "/usr/local/bin/ghauri" ]; then
                         installed_or_updated=true
                     fi
                     ;; 
                 dalfox)
                     go install -v github.com/hahwul/dalfox/v2@latest >/dev/null 2>&1
-                    echo $PASSWORD | sudo -S cp ~/go/bin/dalfox /usr/local/bin/ >/dev/null 2>&1 && installed_or_updated=true
+                    sudo cp ~/go/bin/dalfox /usr/local/bin/ >/dev/null 2>&1 && installed_or_updated=true
                     ;; 
                 trufflehog)
                     curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin >/dev/null 2>&1 && installed_or_updated=true
@@ -447,16 +444,15 @@ check_and_install_tools() {
                     else
                         git clone https://github.com/PhilopaterSh/Ph.Sh-Subdomain.git "$HOME/tools/Ph.Sh-Subdomain" >/dev/null 2>&1
                     fi
-                    pip3 install --break-system-packages -r "$HOME/tools/Ph.Sh-Subdomain/requirements.txt" >/dev/null 2>&1
                     (cd "$HOME/tools/Ph.Sh-Subdomain" && go build >/dev/null 2>&1)
-                    if [ -f "$HOME/tools/Ph.Sh-Subdomain/Ph.Sh-Subdomain" ]; then
-                        echo $PASSWORD | sudo -S mv "$HOME/tools/Ph.Sh-Subdomain/Ph.Sh-Subdomain" /usr/local/bin/ >/dev/null 2>&1 && installed_or_updated=true
+                    if [ -f "$HOME/tools/Ph.Sh-Subdomain/Ph.Sh_Sub" ]; then
+                        sudo mv "$HOME/tools/Ph.Sh-Subdomain/Ph.Sh_Sub" /usr/local/bin/ >/dev/null 2>&1 && installed_or_updated=true
                     fi
                     ;; 
                 Ph.Sh_url)
                     go install -v github.com/PhilopaterSh/Ph.Sh_url@latest >/dev/null 2>&1
                     if [ -f "$(go env GOPATH)/bin/Ph.Sh_url" ]; then
-                        echo $PASSWORD | sudo -S mv "$(go env GOPATH)/bin/Ph.Sh_url" /usr/local/bin/ >/dev/null 2>&1 && installed_or_updated=true
+                        sudo mv "$(go env GOPATH)/bin/Ph.Sh_url" /usr/local/bin/ >/dev/null 2>&1 && installed_or_updated=true
                     fi
                     ;; 
                 *)
@@ -479,7 +475,7 @@ install_pdtm_tools() {
         if [ $? -eq 0 ]; then
             echo -e "${GREEN}[✓] $tool installed/updated.${NC}"
             if [ -f "$HOME/.pdtm/go/bin/$tool" ]; then
-                echo $PASSWORD | sudo -S mv "$HOME/.pdtm/go/bin/$tool" /usr/local/bin/ >/dev/null 2>&1
+                sudo mv "$HOME/.pdtm/go/bin/$tool" /usr/local/bin/ >/dev/null 2>&1
                 if [ $? -eq 0 ]; then
                     echo -e "${GREEN}[✓] $tool moved to /usr/local/bin.${NC}"
                 else
@@ -493,6 +489,7 @@ install_pdtm_tools() {
 }
 
 # === Main Execution ===
+sudo -v || { echo -e "${RED}[✗] sudo authentication failed.${NC}"; exit 1; }
 setup_zsh_path
 
 check_go
@@ -526,11 +523,11 @@ fi
 
 check_node
 
-echo $PASSWORD | sudo -S apt update >/dev/null 2>&1
-echo $PASSWORD | sudo -S apt install -y python3-dev build-essential libpcap-dev >/dev/null 2>&1
+sudo apt update >/dev/null 2>&1
+sudo apt install -y python3-dev build-essential libpcap-dev >/dev/null 2>&1
 echo -e "${GREEN}[✓] Python build dependencies installed.${NC}"
 
-echo $PASSWORD | sudo -S apt install -y pipx >/dev/null 2>&1
+sudo apt install -y pipx >/dev/null 2>&1
 echo -e "${GREEN}[✓] pipx installed.${NC}"
 
 pipx ensurepath >/dev/null 2>&1 || true
@@ -545,10 +542,10 @@ install_additional_tools() {
     # Install snapd
     if ! command -v snap &>/dev/null; then
         echo -e "${BLUE}[+] Installing snapd...${NC}"
-        echo $PASSWORD | sudo -S apt update >/dev/null 2>&1
-        echo $PASSWORD | sudo -S apt install -y snapd >/dev/null 2>&1
-        echo $PASSWORD | sudo -S systemctl enable snapd
-        echo $PASSWORD | sudo -S systemctl start snapd
+        sudo apt update >/dev/null 2>&1
+        sudo apt install -y snapd >/dev/null 2>&1
+        sudo systemctl enable snapd
+        sudo systemctl start snapd
         if command -v snap &>/dev/null; then
             echo -e "${GREEN}[✓] snapd installed successfully.${NC}"
         else
@@ -562,7 +559,7 @@ install_additional_tools() {
     # Install Visual Studio Code
     if ! command -v code &>/dev/null; then
         echo -e "${BLUE}[+] Installing Visual Studio Code...${NC}"
-        echo $PASSWORD | sudo -S snap install code --classic >/dev/null 2>&1
+        sudo snap install code --classic >/dev/null 2>&1
         if command -v code &>/dev/null; then
             echo -e "${GREEN}[✓] Visual Studio Code installed successfully.${NC}"
         else
@@ -575,7 +572,7 @@ install_additional_tools() {
     # Install massdns
     if ! command -v massdns &>/dev/null; then
         echo -e "${BLUE}[+] Installing massdns...${NC}"
-        echo $PASSWORD | sudo -S apt install -y massdns >/dev/null 2>&1
+        sudo apt install -y massdns >/dev/null 2>&1
         if command -v massdns &>/dev/null; then
             echo -e "${GREEN}[✓] massdns installed successfully.${NC}"
         else
@@ -588,7 +585,7 @@ install_additional_tools() {
     # Install seclists
     if [ ! -d "/usr/share/seclists" ]; then
         echo -e "${BLUE}[+] Installing seclists...${NC}"
-        echo $PASSWORD | sudo -S apt install -y seclists >/dev/null 2>&1
+        sudo apt install -y seclists >/dev/null 2>&1
         if [ -d "/usr/share/seclists" ]; then
             echo -e "${GREEN}[✓] seclists installed successfully.${NC}"
         else
@@ -601,7 +598,7 @@ install_additional_tools() {
     # Install sshpass
     if ! command -v sshpass &>/dev/null; then
         echo -e "${BLUE}[+] Installing sshpass...${NC}"
-        echo $PASSWORD | sudo -S apt-get install -y sshpass >/dev/null 2>&1
+        sudo apt-get install -y sshpass >/dev/null 2>&1
         if command -v sshpass &>/dev/null; then
             echo -e "${GREEN}[✓] sshpass installed successfully.${NC}"
         else
