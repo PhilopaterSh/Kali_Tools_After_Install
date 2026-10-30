@@ -124,7 +124,8 @@ verify_installations() {
         local tool_name="${tools[i]}"
         local expected_path="${tools[i+1]}"
         if command -v "$tool_name" &> /dev/null; then
-            local actual_path=$(command -v "$tool_name")
+            local actual_path
+            actual_path=$(command -v "$tool_name")
             if [[ -n "$expected_path" && "$actual_path" == "$expected_path" ]]; then
                 successful_tools+=("$tool_name ($actual_path)")
             elif [[ -z "$expected_path" ]]; then
@@ -141,7 +142,8 @@ verify_installations() {
         local tool_name="${go_tools[i]}"
         local expected_path="${go_tools[i+1]}"
         if command -v "$tool_name" &> /dev/null; then
-            local actual_path=$(command -v "$tool_name")
+            local actual_path
+            actual_path=$(command -v "$tool_name")
             if [[ -n "$expected_path" && "$actual_path" == "$expected_path" ]]; then
                 successful_tools+=("$tool_name ($actual_path)")
             elif [[ -z "$expected_path" ]]; then
@@ -206,260 +208,160 @@ check_node() {
     fi
 }
 
+# === Function: Per-tool install/update handler ===
+# One definition instead of two nearly-identical case blocks (~200 duplicated
+# lines removed). mode "update" = tool already present (upgrade path);
+# mode "install" = tool missing. Returns 0 when the tool was handled.
+process_tool() {
+    local tool="$1" mode="$2"
+    local ok=false
+    case $tool in
+        figlet|ffuf|jq|nikto|feroxbuster|whatweb|curl|wget|dirb|nmap|subfinder|findomain|knockpy)
+            if [ "$mode" = "update" ]; then
+                sudo apt-get --only-upgrade install -y "$tool" >/dev/null 2>&1 && ok=true
+            else
+                sudo apt update >/dev/null 2>&1 && sudo apt install -y "$tool" >/dev/null 2>&1 && ok=true
+            fi
+            ;;
+        amass)
+            # Original script only ever installed amass when missing; keep that.
+            if [ "$mode" = "install" ]; then
+                go install -v github.com/owasp-amass/amass/v4/...@latest >/dev/null 2>&1
+                sudo cp ~/go/bin/amass /usr/local/bin/ >/dev/null 2>&1 && ok=true
+            else
+                ok=true
+            fi
+            ;;
+        assetfinder|anew)
+            go install -v github.com/tomnomnom/"$tool"@latest >/dev/null 2>&1
+            sudo cp ~/go/bin/"$tool" /usr/local/bin/ >/dev/null 2>&1 && ok=true
+            ;;
+        update-fingerprints)
+            go install -v github.com/projectdiscovery/wappalyzergo/cmd/update-fingerprints@latest >/dev/null 2>&1
+            sudo cp ~/go/bin/update-fingerprints /usr/local/bin/update-fingerprints >/dev/null 2>&1 && ok=true
+            ;;
+        dirsearch)
+            if [ -d "$HOME/tools/dirsearch" ]; then
+                (cd "$HOME/tools/dirsearch" && git pull >/dev/null 2>&1)
+            else
+                git clone https://github.com/maurosoria/dirsearch.git "$HOME/tools/dirsearch" >/dev/null 2>&1
+            fi
+            sudo ln -sf "$HOME/tools/dirsearch/dirsearch.py" /usr/local/bin/dirsearch
+            if [ -f "/usr/local/bin/dirsearch" ]; then
+                ok=true
+            fi
+            ;;
+        waybacklister)
+            if [ -d "$HOME/tools/waybacklister" ]; then
+                (cd "$HOME/tools/waybacklister" && git pull >/dev/null 2>&1)
+            else
+                git clone https://github.com/anmolksachan/waybacklister.git "$HOME/tools/waybacklister" >/dev/null 2>&1
+            fi
+            python3 -m venv "$HOME/tools/waybacklister/venv" >/dev/null 2>&1
+            (
+                source "$HOME/tools/waybacklister/venv/bin/activate"
+                pip3 install -r "$HOME/tools/waybacklister/requirements.txt" >/dev/null 2>&1
+            )
+            sudo ln -sf "$HOME/tools/waybacklister/waybacklister.py" /usr/local/bin/waybacklister
+            if [ -f "/usr/local/bin/waybacklister" ]; then
+                ok=true
+            fi
+            ;;
+        jsfinder)
+            if [ -d "$HOME/tools/jsfinder" ]; then
+                (cd "$HOME/tools/jsfinder" && git pull >/dev/null 2>&1)
+            else
+                git clone https://github.com/003random/JsFinder.git "$HOME/tools/jsfinder" >/dev/null 2>&1
+            fi
+            sudo ln -sf "$HOME/tools/jsfinder/JsFinder.py" /usr/local/bin/jsfinder >/dev/null 2>&1 && ok=true
+            ;;
+        nuclei)
+            go install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest >/dev/null 2>&1
+            sudo cp ~/go/bin/nuclei /usr/local/bin/ >/dev/null 2>&1
+            nuclei -update-templates >/dev/null 2>&1 && ok=true
+            ;;
+        gemini)
+            sudo npm install -g @google/gemini-cli >/dev/null 2>&1 && ok=true
+            ;;
+        hexstrike-ai)
+            if [ -d "$HOME/tools/hexstrike-ai" ]; then
+                (cd "$HOME/tools/hexstrike-ai" && git pull >/dev/null 2>&1)
+            else
+                git clone https://github.com/0x4m4/hexstrike-ai.git "$HOME/tools/hexstrike-ai" >/dev/null 2>&1
+            fi
+            python3 -m venv "$HOME/tools/hexstrike-ai/venv" >/dev/null 2>&1
+            (
+                source "$HOME/tools/hexstrike-ai/venv/bin/activate"
+                pip3 install -r "$HOME/tools/hexstrike-ai/requirements.txt" >/dev/null 2>&1
+            )
+            echo -e '#!/bin/bash\nsource "$HOME/tools/hexstrike-ai/venv/bin/activate"\npython "$HOME/tools/hexstrike-ai/server.py" "$@"' > "$HOME/tools/hexstrike-ai/hexstrike-ai"
+            chmod +x "$HOME/tools/hexstrike-ai/hexstrike-ai"
+            sudo ln -sf "$HOME/tools/hexstrike-ai/hexstrike-ai" /usr/local/bin/hexstrike-ai
+            if [ -f "/usr/local/bin/hexstrike-ai" ]; then
+                ok=true
+            fi
+            ;;
+        ghauri)
+            if [ -d "$HOME/tools/ghauri" ]; then
+                (cd "$HOME/tools/ghauri" && git pull >/dev/null 2>&1)
+            else
+                git clone https://github.com/r0oth3x49/ghauri.git "$HOME/tools/ghauri" >/dev/null 2>&1
+            fi
+            python3 -m venv "$HOME/tools/ghauri/venv" >/dev/null 2>&1
+            (
+                source "$HOME/tools/ghauri/venv/bin/activate"
+                pip3 install --upgrade -r "$HOME/tools/ghauri/requirements.txt" >/dev/null 2>&1
+                python3 "$HOME/tools/ghauri/setup.py" install >/dev/null 2>&1
+            )
+            echo -e '#!/bin/bash\nsource "$HOME/tools/ghauri/venv/bin/activate"\nghauri "$@"' > "$HOME/tools/ghauri/ghauri-launcher"
+            chmod +x "$HOME/tools/ghauri/ghauri-launcher"
+            sudo ln -sf "$HOME/tools/ghauri/ghauri-launcher" /usr/local/bin/ghauri
+            if [ -f "/usr/local/bin/ghauri" ]; then
+                ok=true
+            fi
+            ;;
+        dalfox)
+            go install -v github.com/hahwul/dalfox/v2@latest >/dev/null 2>&1
+            sudo cp ~/go/bin/dalfox /usr/local/bin/ >/dev/null 2>&1 && ok=true
+            ;;
+        trufflehog)
+            curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin >/dev/null 2>&1 && ok=true
+            ;;
+        Ph.Sh-Subdomain)
+            if [ -d "$HOME/tools/Ph.Sh-Subdomain" ]; then
+                (cd "$HOME/tools/Ph.Sh-Subdomain" && git pull >/dev/null 2>&1)
+            else
+                git clone https://github.com/PhilopaterSh/Ph.Sh-Subdomain.git "$HOME/tools/Ph.Sh-Subdomain" >/dev/null 2>&1
+            fi
+            (cd "$HOME/tools/Ph.Sh-Subdomain" && go build >/dev/null 2>&1)
+            if [ -f "$HOME/tools/Ph.Sh-Subdomain/Ph.Sh_Sub" ]; then
+                sudo mv "$HOME/tools/Ph.Sh-Subdomain/Ph.Sh_Sub" /usr/local/bin/ >/dev/null 2>&1 && ok=true
+            fi
+            ;;
+        Ph.Sh_url)
+            go install -v github.com/PhilopaterSh/Ph.Sh_url@latest >/dev/null 2>&1
+            if [ -f "$(go env GOPATH)/bin/Ph.Sh_url" ]; then
+                sudo mv "$(go env GOPATH)/bin/Ph.Sh_url" /usr/local/bin/ >/dev/null 2>&1 && ok=true
+            fi
+            ;;
+        *)
+            # No special handling defined: an already-installed tool counts as
+            # done; a missing tool with no recipe is a failure.
+            if [ "$mode" = "update" ]; then
+                ok=true
+            fi
+            ;;
+    esac
+    [ "$ok" = true ]
+}
+
 # === Function: Tool Checker and Updater ===
 check_and_install_tools() {
     echo -e "${BLUE}[+] Checking and updating other tools...${NC}"
     for tool in "${REQUIRED_TOOLS[@]}"; do
-        local installed_or_updated=false
-        if command -v "$tool" &>/dev/null; then
-
-            case $tool in
-                figlet|ffuf|jq|nikto|feroxbuster|whatweb|curl|wget|dirb|nmap|subfinder|findomain|knockpy)
-                    sudo apt-get --only-upgrade install -y "$tool" >/dev/null 2>&1 && installed_or_updated=true
-                    ;; 
-                assetfinder|anew)
-                    go install -v github.com/tomnomnom/"$tool"@latest >/dev/null 2>&1
-                    sudo cp ~/go/bin/"$tool" /usr/local/bin/ >/dev/null 2>&1 && installed_or_updated=true
-                    ;; 
-                update-fingerprints)
-                    go install -v github.com/projectdiscovery/wappalyzergo/cmd/update-fingerprints@latest >/dev/null 2>&1
-                    sudo cp ~/go/bin/update-fingerprints /usr/local/bin/update-fingerprints >/dev/null 2>&1 && installed_or_updated=true
-                    ;; 
-                dirsearch)
-                    if [ -d "$HOME/tools/dirsearch" ]; then
-                        (cd "$HOME/tools/dirsearch" && git pull >/dev/null 2>&1)
-                    else
-                        git clone https://github.com/maurosoria/dirsearch.git "$HOME/tools/dirsearch" >/dev/null 2>&1
-                    fi
-                    sudo ln -sf "$HOME/tools/dirsearch/dirsearch.py" /usr/local/bin/dirsearch
-                    if [ -f "/usr/local/bin/dirsearch" ]; then
-                        installed_or_updated=true
-                    fi
-                    ;; 
-                waybacklister)
-                    if [ -d "$HOME/tools/waybacklister" ]; then
-                        (cd "$HOME/tools/waybacklister" && git pull >/dev/null 2>&1)
-                    else
-                        git clone https://github.com/anmolksachan/waybacklister.git "$HOME/tools/waybacklister" >/dev/null 2>&1
-                    fi
-                    python3 -m venv "$HOME/tools/waybacklister/venv" >/dev/null 2>&1
-                    (
-                        source "$HOME/tools/waybacklister/venv/bin/activate"
-                        pip3 install -r "$HOME/tools/waybacklister/requirements.txt" >/dev/null 2>&1
-                    )
-                    sudo ln -sf "$HOME/tools/waybacklister/waybacklister.py" /usr/local/bin/waybacklister
-                    if [ -f "/usr/local/bin/waybacklister" ]; then
-                        installed_or_updated=true
-                    fi
-                    ;; 
-                jsfinder)
-                    if [ -d "$HOME/tools/jsfinder" ]; then
-                        (cd "$HOME/tools/jsfinder" && git pull >/dev/null 2>&1)
-                    else
-                        git clone https://github.com/003random/JsFinder.git "$HOME/tools/jsfinder" >/dev/null 2>&1
-                    fi
-                    sudo ln -sf "$HOME/tools/jsfinder/JsFinder.py" /usr/local/bin/jsfinder >/dev/null 2>&1 && installed_or_updated=true
-                    ;; 
-                nuclei)
-                    go install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest >/dev/null 2>&1
-                    sudo cp ~/go/bin/nuclei /usr/local/bin/ >/dev/null 2>&1
-                    nuclei -update-templates >/dev/null 2>&1 && installed_or_updated=true
-                    ;; 
-                gemini)
-                    sudo npm install -g @google/gemini-cli >/dev/null 2>&1 && installed_or_updated=true
-                    ;; 
-                hexstrike-ai)
-                    if [ -d "$HOME/tools/hexstrike-ai" ]; then
-                        (cd "$HOME/tools/hexstrike-ai" && git pull >/dev/null 2>&1)
-                    else
-                        git clone https://github.com/0x4m4/hexstrike-ai.git "$HOME/tools/hexstrike-ai" >/dev/null 2>&1
-                    fi
-                    python3 -m venv "$HOME/tools/hexstrike-ai/venv" >/dev/null 2>&1
-                    (
-                        source "$HOME/tools/hexstrike-ai/venv/bin/activate"
-                        pip3 install -r "$HOME/tools/hexstrike-ai/requirements.txt" >/dev/null 2>&1
-                    )
-                    echo -e '#!/bin/bash\nsource "$HOME/tools/hexstrike-ai/venv/bin/activate"\npython "$HOME/tools/hexstrike-ai/server.py" "$@"' > "$HOME/tools/hexstrike-ai/hexstrike-ai"
-                    chmod +x "$HOME/tools/hexstrike-ai/hexstrike-ai"
-                    sudo ln -sf "$HOME/tools/hexstrike-ai/hexstrike-ai" /usr/local/bin/hexstrike-ai
-                    if [ -f "/usr/local/bin/hexstrike-ai" ]; then
-                        installed_or_updated=true
-                    fi
-                    ;; 
-                ghauri)
-                    if [ -d "$HOME/tools/ghauri" ]; then
-                        (cd "$HOME/tools/ghauri" && git pull >/dev/null 2>&1)
-                    else
-                        git clone https://github.com/r0oth3x49/ghauri.git "$HOME/tools/ghauri" >/dev/null 2>&1
-                    fi
-                    python3 -m venv "$HOME/tools/ghauri/venv" >/dev/null 2>&1
-                    (
-                        source "$HOME/tools/ghauri/venv/bin/activate"
-                        pip3 install --upgrade -r "$HOME/tools/ghauri/requirements.txt" >/dev/null 2>&1
-                        python3 "$HOME/tools/ghauri/setup.py" install >/dev/null 2>&1
-                    )
-                    echo -e '#!/bin/bash\nsource "$HOME/tools/ghauri/venv/bin/activate"\nghauri "$@"' > "$HOME/tools/ghauri/ghauri-launcher"
-                    chmod +x "$HOME/tools/ghauri/ghauri-launcher"
-                    sudo ln -sf "$HOME/tools/ghauri/ghauri-launcher" /usr/local/bin/ghauri
-                    if [ -f "/usr/local/bin/ghauri" ]; then
-                        installed_or_updated=true
-                    fi
-                    ;; 
-                dalfox)
-                    go install -v github.com/hahwul/dalfox/v2@latest >/dev/null 2>&1
-                    sudo cp ~/go/bin/dalfox /usr/local/bin/ >/dev/null 2>&1 && installed_or_updated=true
-                    ;; 
-                trufflehog)
-                    curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin >/dev/null 2>&1 && installed_or_updated=true
-                    ;; 
-                Ph.Sh-Subdomain)
-                    if [ -d "$HOME/tools/Ph.Sh-Subdomain" ]; then
-                        (cd "$HOME/tools/Ph.Sh-Subdomain" && git pull >/dev/null 2>&1)
-                    else
-                        git clone https://github.com/PhilopaterSh/Ph.Sh-Subdomain.git "$HOME/tools/Ph.Sh-Subdomain" >/dev/null 2>&1
-                    fi
-                    (cd "$HOME/tools/Ph.Sh-Subdomain" && go build >/dev/null 2>&1)
-                    if [ -f "$HOME/tools/Ph.Sh-Subdomain/Ph.Sh_Sub" ]; then
-                        sudo mv "$HOME/tools/Ph.Sh-Subdomain/Ph.Sh_Sub" /usr/local/bin/ >/dev/null 2>&1 && installed_or_updated=true
-                    fi
-                    ;; 
-                Ph.Sh_url)
-                    go install -v github.com/PhilopaterSh/Ph.Sh_url@latest >/dev/null 2>&1
-                    if [ -f "$(go env GOPATH)/bin/Ph.Sh_url" ]; then
-                        sudo mv "$(go env GOPATH)/bin/Ph.Sh_url" /usr/local/bin/ >/dev/null 2>&1 && installed_or_updated=true
-                    fi
-                    ;; 
-                *)
-                    installed_or_updated=true
-                    ;; 
-            esac
-        else
-
-            case $tool in
-                figlet|ffuf|jq|nikto|feroxbuster|whatweb|curl|wget|dirb|nmap|subfinder|findomain|knockpy)
-                    sudo apt update >/dev/null 2>&1 && sudo apt install -y "$tool" >/dev/null 2>&1 && installed_or_updated=true
-                    ;; 
-                assetfinder|anew)
-                    go install -v github.com/tomnomnom/"$tool"@latest >/dev/null 2>&1
-                    sudo cp ~/go/bin/"$tool" /usr/local/bin/ >/dev/null 2>&1 && installed_or_updated=true
-                    ;; 
-                update-fingerprints)
-                    go install -v github.com/projectdiscovery/wappalyzergo/cmd/update-fingerprints@latest >/dev/null 2>&1
-                    sudo cp ~/go/bin/update-fingerprints /usr/local/bin/update-fingerprints >/dev/null 2>&1 && installed_or_updated=true
-                    ;; 
-                amass)
-                    go install -v github.com/owasp-amass/amass/v4/...@latest >/dev/null 2>&1
-                    sudo cp ~/go/bin/amass /usr/local/bin/ >/dev/null 2>&1 && installed_or_updated=true
-                    ;; 
-                dirsearch)
-                    if [ -d "$HOME/tools/dirsearch" ]; then
-                        (cd "$HOME/tools/dirsearch" && git pull >/dev/null 2>&1)
-                    else
-                        git clone https://github.com/maurosoria/dirsearch.git "$HOME/tools/dirsearch" >/dev/null 2>&1
-                    fi
-                    sudo ln -sf "$HOME/tools/dirsearch/dirsearch.py" /usr/local/bin/dirsearch
-                    if [ -f "/usr/local/bin/dirsearch" ]; then
-                        installed_or_updated=true
-                    fi
-                    ;; 
-                waybacklister)
-                    if [ -d "$HOME/tools/waybacklister" ]; then
-                        (cd "$HOME/tools/waybacklister" && git pull >/dev/null 2>&1)
-                    else
-                        git clone https://github.com/anmolksachan/waybacklister.git "$HOME/tools/waybacklister" >/dev/null 2>&1
-                    fi
-                    python3 -m venv "$HOME/tools/waybacklister/venv" >/dev/null 2>&1
-                    (
-                        source "$HOME/tools/waybacklister/venv/bin/activate"
-                        pip3 install -r "$HOME/tools/waybacklister/requirements.txt" >/dev/null 2>&1
-                    )
-                    sudo ln -sf "$HOME/tools/waybacklister/waybacklister.py" /usr/local/bin/waybacklister
-                    if [ -f "/usr/local/bin/waybacklister" ]; then
-                        installed_or_updated=true
-                    fi
-                    ;; 
-                jsfinder)
-                    if [ -d "$HOME/tools/jsfinder" ]; then
-                        (cd "$HOME/tools/jsfinder" && git pull >/dev/null 2>&1)
-                    else
-                        git clone https://github.com/003random/JsFinder.git "$HOME/tools/jsfinder" >/dev/null 2>&1
-                    fi
-                    sudo ln -sf "$HOME/tools/jsfinder/JsFinder.py" /usr/local/bin/jsfinder >/dev/null 2>&1 && installed_or_updated=true
-                    ;; 
-                nuclei)
-                    go install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest >/dev/null 2>&1
-                    sudo cp ~/go/bin/nuclei /usr/local/bin/ >/dev/null 2>&1
-                    nuclei -update-templates >/dev/null 2>&1 && installed_or_updated=true
-                    ;; 
-                gemini)
-                    sudo npm install -g @google/gemini-cli >/dev/null 2>&1 && installed_or_updated=true
-                    ;; 
-                hexstrike-ai)
-                    if [ -d "$HOME/tools/hexstrike-ai" ]; then
-                        (cd "$HOME/tools/hexstrike-ai" && git pull >/dev/null 2>&1)
-                    else
-                        git clone https://github.com/0x4m4/hexstrike-ai.git "$HOME/tools/hexstrike-ai" >/dev/null 2>&1
-                    fi
-                    python3 -m venv "$HOME/tools/hexstrike-ai/venv" >/dev/null 2>&1
-                    (
-                        source "$HOME/tools/hexstrike-ai/venv/bin/activate"
-                        pip3 install -r "$HOME/tools/hexstrike-ai/requirements.txt" >/dev/null 2>&1
-                    )
-                    echo -e '#!/bin/bash\nsource "$HOME/tools/hexstrike-ai/venv/bin/activate"\npython "$HOME/tools/hexstrike-ai/server.py" "$@"' > "$HOME/tools/hexstrike-ai/hexstrike-ai"
-                    chmod +x "$HOME/tools/hexstrike-ai/hexstrike-ai"
-                    sudo ln -sf "$HOME/tools/hexstrike-ai/hexstrike-ai" /usr/local/bin/hexstrike-ai
-                    if [ -f "/usr/local/bin/hexstrike-ai" ]; then
-                        installed_or_updated=true
-                    fi
-                    ;; 
-                ghauri)
-                    if [ -d "$HOME/tools/ghauri" ]; then
-                        (cd "$HOME/tools/ghauri" && git pull >/dev/null 2>&1)
-                    else
-                        git clone https://github.com/r0oth3x49/ghauri.git "$HOME/tools/ghauri" >/dev/null 2>&1
-                    fi
-                    python3 -m venv "$HOME/tools/ghauri/venv" >/dev/null 2>&1
-                    (
-                        source "$HOME/tools/ghauri/venv/bin/activate"
-                        pip3 install --upgrade -r "$HOME/tools/ghauri/requirements.txt" >/dev/null 2>&1
-                        python3 "$HOME/tools/ghauri/setup.py" install >/dev/null 2>&1
-                    )
-                    echo -e '#!/bin/bash\nsource "$HOME/tools/ghauri/venv/bin/activate"\nghauri "$@"' > "$HOME/tools/ghauri/ghauri-launcher"
-                    chmod +x "$HOME/tools/ghauri/ghauri-launcher"
-                    sudo ln -sf "$HOME/tools/ghauri/ghauri-launcher" /usr/local/bin/ghauri
-                    if [ -f "/usr/local/bin/ghauri" ]; then
-                        installed_or_updated=true
-                    fi
-                    ;; 
-                dalfox)
-                    go install -v github.com/hahwul/dalfox/v2@latest >/dev/null 2>&1
-                    sudo cp ~/go/bin/dalfox /usr/local/bin/ >/dev/null 2>&1 && installed_or_updated=true
-                    ;; 
-                trufflehog)
-                    curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin >/dev/null 2>&1 && installed_or_updated=true
-                    ;; 
-                Ph.Sh-Subdomain)
-                    if [ -d "$HOME/tools/Ph.Sh-Subdomain" ]; then
-                        (cd "$HOME/tools/Ph.Sh-Subdomain" && git pull >/dev/null 2>&1)
-                    else
-                        git clone https://github.com/PhilopaterSh/Ph.Sh-Subdomain.git "$HOME/tools/Ph.Sh-Subdomain" >/dev/null 2>&1
-                    fi
-                    (cd "$HOME/tools/Ph.Sh-Subdomain" && go build >/dev/null 2>&1)
-                    if [ -f "$HOME/tools/Ph.Sh-Subdomain/Ph.Sh_Sub" ]; then
-                        sudo mv "$HOME/tools/Ph.Sh-Subdomain/Ph.Sh_Sub" /usr/local/bin/ >/dev/null 2>&1 && installed_or_updated=true
-                    fi
-                    ;; 
-                Ph.Sh_url)
-                    go install -v github.com/PhilopaterSh/Ph.Sh_url@latest >/dev/null 2>&1
-                    if [ -f "$(go env GOPATH)/bin/Ph.Sh_url" ]; then
-                        sudo mv "$(go env GOPATH)/bin/Ph.Sh_url" /usr/local/bin/ >/dev/null 2>&1 && installed_or_updated=true
-                    fi
-                    ;; 
-                *)
-                    ;; 
-            esac
-        fi
-        if $installed_or_updated; then
+        local mode="install"
+        command -v "$tool" &>/dev/null && mode="update"
+        if process_tool "$tool" "$mode"; then
             echo -e "${GREEN}[✓] $tool installed/updated.${NC}"
         else
             echo -e "${RED}[✗] Failed to install/update $tool.${NC}"
@@ -494,7 +396,8 @@ setup_zsh_path
 
 check_go
 
-export PATH=$PATH:$(go env GOPATH)/bin
+GOPATH_BIN="$(go env GOPATH)/bin"
+export PATH="$PATH:$GOPATH_BIN"
 
 go install github.com/projectdiscovery/pdtm/cmd/pdtm@latest >/dev/null 2>&1
 if command -v pdtm &>/dev/null; then
